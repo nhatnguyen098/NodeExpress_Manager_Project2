@@ -1,0 +1,238 @@
+<!--
+        Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+
+        Tip 2: you can also add an image using data-image tag
+    -->
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header card-header-primary">
+                        <h4 class="card-title">Edit Profile</h4>
+                        <p class="card-category">Complete your profile</p>
+                    </div>
+                    <div class="card-body">
+                        {{#if users}}
+                        <form action="/user/userUpl/{{users._id}}" method="post">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Username (Email)</label>
+                                        <p>{{users.email}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Full Name</label>
+                                        <input value="{{users.fullName}}" type="text" id="fullName" name="fullName"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Birthday</label>
+                                        <input value="{{userBirth}}" type="date" id="birthday" name="birthday"
+                                            class="form-control">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Status</label>
+                                        <select selected id="status" name="status" class="form-control">
+                                            <option value="Active">Active</option>
+                                            <option value="inActive">isActive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">User role</label>
+                                        <select selected id="role" name="role" class="form-control">
+                                            <option value="Manager">Manager</option>
+                                            <option value="Customer">Customer</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Company</label>
+                                        <input value="{{users.company}}" type="text" id="company" name="company"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Phone Number</label>
+                                        <input value="{{users.phoneNum}}" type="number" id="phoneNum" name="phoneNum"
+                                            class="form-control">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Adress</label>
+                                        <input value="{{users.address}}" type="text" id="address" name="address"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>About Me</label>
+                                        <div class="form-group">
+                                            <textarea id="description" name="description" class="form-control"
+                                                rows="5">{{users.description}}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                            <button type="submit" class="btn btn-primary pull-right">Update Profile</button>
+                            <div class="clearfix"></div>
+                        </form>
+
+                        {{else}}
+                        {{#if hasErrors}}
+                        <div class="alert alert-danger">
+                            {{#each messages}}
+                            <strong>{{this}}</strong>
+                            {{/each}}
+                        </div>
+                        {{/if}}
+                        <form action="/user/signup" method="post">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Username (Email)</label>
+                                        <input type="email" id="email" name="email" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Password</label>
+                                        <input type="password" id="password" name="password" class="form-control"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Confirm Password</label>
+                                        <input type="password" id="confirmPass" name="confirmPass" class="form-control"
+                                            required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Full Name</label>
+                                        <input type="text" id="fullName" name="fullName" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Birthday</label>
+                                        <input type="date" id="birthday" name="birthday" class="form-control">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Company</label>
+                                        <input type="text" id="company" name="company" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Phone Number</label>
+                                        <input type="number" id="phoneNum" name="phoneNum" class="form-control">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Adress</label>
+                                        <input type="text" id="address" name="address" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Role</label>
+                                        <select class="form-control" id="role" name="role">
+                                            <option value="Customer">Customer</option>
+                                            <option value="Manager">Manager</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Status</label>
+                                        <select class="form-control" id="status" name="status">
+                                            <option value="Active">Active</option>
+                                            <option value="isActive">IsActive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>About Me</label>
+                                        <div class="form-group">
+                                            <textarea id="description" name="description" class="form-control"
+                                                rows="5"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                            <button type="submit" class="btn btn-primary pull-right">Update Profile</button>
+                            <div class="clearfix"></div>
+                        </form>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-profile">
+                    <div class="card-avatar">
+                        <a href="#">
+                            <img class="img" src="../../images/avatar-01.jpg" />
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-category text-gray">CEO / Co-Founder</h6>
+                        <h4 class="card-title">Alec Thompson</h4>
+                        <p class="card-description">
+                            Don't be scared of the truth because we need to restart the human foundation in
+                            truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the
+                            back is...
+                        </p>
+                        <a href="#pablo" class="btn btn-primary btn-round">Follow</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

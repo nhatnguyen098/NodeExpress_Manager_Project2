@@ -1,0 +1,146 @@
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-primary">
+                        <h4 class="card-title">Upload product</h4>
+                        <p class="card-category">Product key: {{keyUpdate}}</p>
+                    </div>
+                    <div class="card-body">
+                        {{#if pro}}
+                        <form action="/product-upload/{{keyUpdate}}" method="post" enctype="multipart/form-data">
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Product Name:</label>
+                                        <input value="{{pro.title}}" id="proname" name="proname" type="text"
+                                            class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Category:</label>
+                                        <select id="userGroup" name="userGroup" class="custom-select" required>
+                                            <option selected value="women">For Women</option>
+                                            <option value="men">For Men</option>
+                                            <option value="shoes">Shoes</option>
+                                            <option value="watches">Watches</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Product Price:</label>
+                                        <input value="{{pro.price}}" id="price" name="price" type="number"
+                                            class="form-control" min="0" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Product Image:</label>
+                                    </div>
+                                   
+                                        <input id="imagePath" name="imagePath"
+                                            accept="image/*" type="file" required />
+                                        {{!-- <label class="custom-file-label" for="proImage">Choose file</label> --}}
+               
+                                    
+                                    
+                                    
+                                
+                                      
+                                   
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Description about product:</label>
+                                        <div class="form-group">
+                                            <label class="bmd-label-floating"></label>
+                                            <textarea id="description" name="description" class="form-control"
+                                                rows="5">{{pro.description}}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary pull-right">Upload</button>
+                            <div class="clearfix"></div>
+                        </form>
+                        {{else}}
+                        <form enctype="multipart/form-data" action="/product-upload/new" method="post">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Product Name:</label>
+                                        <input id="proname" name="proname" type="text" class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Category:</label>
+                                        <select id="userGroup" name="userGroup" class="custom-select" required>
+                                            <option selected value="women">For Women</option>
+                                            <option value="men">For Men</option>
+                                            <option value="shoes">Shoes</option>
+                                            <option value="watches">Watches</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Product Price:</label>
+                                        <input id="price" name="price" type="number" class="form-control" min="0"
+                                            required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Product Image:</label>
+                                    </div>
+                                    <div class="form-control custom-file">
+                                        <input id="imagePath" name="imagePath"
+                                            accept="image/png,image/jpeg,application/pdf" type="file" required />
+                                        {{!-- <label class="custom-file-label" for="proImage">Choose file</label> --}}
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Description about product:</label>
+                                        <div class="form-group">
+                                            <label class="bmd-label-floating"></label>
+                                            <textarea id="description" name="description" class="form-control"
+                                                rows="5"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary pull-right">Upload</button>
+                            <div class="clearfix"></div>
+                        </form>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

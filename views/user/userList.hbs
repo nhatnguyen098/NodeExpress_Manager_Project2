@@ -1,0 +1,66 @@
+<div class="content">
+  <div class="container-fluid"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card card-plain">
+        <div class="card-header card-header-primary">
+          <h4 class="card-title mt-0">User List <a href="/user/signup/new" class="btn btn-primary pull-right" type="button">Create New</a></h4>
+          <p class="card-category">Synthesize information of each product</p>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="text-primary">
+                <th>
+                  No.
+                </th>
+                <th>
+                  User Account
+                </th>
+                <th>
+                  User Name
+                </th>
+                <th>
+                  Phone Number
+                </th>
+                <th>
+                  Role
+                </th>
+                <th>
+                  Status
+                </th>
+              </thead>
+              <tbody>
+                {{#each users}}
+                <tr>
+                  <td>
+                    {{this.number}}
+                  </td>
+                  <td>
+                    {{this.email}}
+                  </td>
+                  <td>
+                    {{this.fullName}}
+                  </td>
+                  <td>
+                    {{this.phoneNum}}
+                  </td>
+                  <td>
+                    {{this.role}}
+                  </td>
+                  <td>
+                     {{this.status}}
+                  </td>
+                  <td>
+                    <a class="text-primary" href="/user/signup/{{this._id}}">Detail</a>
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

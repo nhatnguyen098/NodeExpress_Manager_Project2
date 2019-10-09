@@ -1,0 +1,303 @@
+<div class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card card-chart">
+          <div class="card-header card-header-primary">
+            <div class="ct-chart"></div>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title">Daily Sales</h4>
+            <p class="card-category">
+              <span class="{{dailySales.color}}"><i class="{{dailySales.icon}}"></i> {{dailySales.dailySales}}% </span>
+              increase in today sales.</p>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons">access_time</i> All time
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card card-chart">
+          <div class="card-header card-header-primary">
+            <div class="ct-chart"></div>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title">Total Order</h4>
+            <p class="card-category">
+              {{totalOrder}} Orders
+            </p>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons">access_time</i> All time
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-4 col-sm-4">
+        <div class="card card-stats">
+          <div class="card-header card-header-primary card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">store</i>
+            </div>
+            <p class="card-category">Revenue total</p>
+            <h3 class="card-title">$ {{totalProfit}}</h3>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons">date_range</i> All time
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-9">
+        <div class="card card-chart">
+          <div class="card-header card-header-white">
+            <canvas id="proProfit" height="200"></canvas>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title">Chart for profit of each product</h4>
+            <p class="card-category">Summary of profits have been obtained</p>
+            <button type="button" id="saveImg" class="btn btn-primary">Save image</button>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons">access_time</i> All time
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card card-stats">
+              <div class="card-header card-header-primary card-header-icon">
+                <div class="card-icon">
+                  <p class="card-category text-white">
+                    <h4>Range date</h4>
+                  </p>
+                </div>
+                <form action="/" method="post">
+                  <div class="form-group">
+                    <input type="date" class="form-control" name="start" id="start" placeholder="The start day">
+                  </div>
+                  <div class="form-group">
+                    <input type="date" class="form-control" name="end" id="end">
+                  </div>
+                  <button type="submit" class="btn btn-primary">submit</button>
+                </form>
+              </div>
+              <div class="card-footer">
+                <div class="stats">
+                  <i class="material-icons">date_range</i> All time
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="card card-stats">
+              <div class="card-header card-header-primary card-header-icon">
+                <div class="card-icon">
+                  <p class="card-category text-white">
+                    <h4>Filter Option</h4>
+                  </p>
+                </div>
+                <form action="/filterOption" method="post">
+                  <div class="form-group">
+                    <input type="text" class="form-control" id="proName" name="proName"
+                      placeholder="Input Product Name">
+                  </div>
+                  <div class="form-group">
+                    <select class="form-control" name="category" id="category">
+                      <option value="0" selected>Choose category</option>
+                      <option value="men">For Men</option>
+                      <option value="women">For Women</option>
+                      <option value="shoes">Shoes</option>
+                      <option value="bag">Bag</option>
+                      <option value="watches">Watches</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-primary">submit</button>
+                </form>
+              </div>
+              <div class="card-footer">
+                <div class="stats">
+                  <i class="material-icons">date_range</i> All time
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-6 col-md-12">
+        <div class="card card-chart">
+          <div class="card-header card-header-white">
+            <canvas id="percentChart" height="300"></canvas>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title">Chart for profit of each product</h4>
+            <p class="card-category">Summary of profits have been obtained</p>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons">access_time</i> All time
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-12">
+        <div class="card card-chart">
+          <div class="card-header card-header-white">
+            <canvas id="lineChart" height="300"></canvas>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title">Chart for profit of each product</h4>
+            <p class="card-category">Summary of profits have been obtained</p>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons">access_time</i> All time
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type='text/javascript'>
+
+  // random color
+  let dynamicColors = function () {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return "rgba(" + r + "," + g + "," + b + "," + "0.3)";
+  }
+
+  // bar chart
+  var arrTitles = {{{ arrTitle }}}
+  var arrProfits = {{{ arrProfit }}}
+  var arrPercent = {{{ arrPercent }}}
+  DrawChart(arrTitles, arrProfits, 'bar', ' Profit percent of products', 'proProfit', true)
+
+  // pie chart
+  var title = [];
+  var percent = [];
+  arrPercent.forEach(s => { title.push(s.name); percent.push(s.percent) })
+  DrawChart(title, percent, 'pie', 'Profit of each products', 'percentChart', false)
+  DrawChart(title, percent, 'line', 'Profit of each products', 'lineChart', true)
+
+
+  // drawChart
+  function DrawChart(label, datas, optionChart, titleChart, tagMaster, displays) {
+    var ctx = document.getElementById(tagMaster).getContext('2d');
+    chart_variable = new Chart(ctx, {
+      type: optionChart,
+      data: {
+        labels: label,
+        datasets: [{
+          label: titleChart,
+          data: datas,
+          backgroundColor: 'rgba(75, 192, 192, 0.5)',
+          borderColor: '(75, 192, 192, 5)',
+          fillColor: 'rgba(75, 192, 192, 0.2)',
+          strokeColor: 'rgba(75, 192, 192, 0.2)',
+          highlightFill: 'rgba(75, 192, 192, 0.2)',
+          highlighStroke: 'rgba(75, 192, 192, 0.2)',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        title: {
+          text: titleChart,
+          fontSize: 25,
+          fontStyle: 'bold',
+          display: true
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              fontSize: 14,
+            }
+          }],
+          xAxes: [{
+            ticks: {
+              beginAtZero: true,
+              fontSize: 14,
+              display: displays,
+            }
+          }]
+        }
+      }
+    });
+    saveImg.onclick = () => {
+      chart_variable.options.title.text = 'Chart for profit of each product';
+      chart_variable.data.datasets.backgroundColor = '(75, 192, 192, 2)'
+      chart_variable.update({
+        duration: 0
+      });
+      // or, use
+      // chart_variable.update(0);
+
+      /* save as image */
+      var link = document.createElement('a');
+      link.href = chart_variable.toBase64Image();
+      link.download = 'myImage.png';
+      link.click();
+
+      /* rollback to old title */
+      chart_variable.options.title.text = 'Chart Title';
+      chart_variable.update({
+        duration: 0
+      });
+      // or, use
+      // chart_variable.update(0);
+    }
+
+  }
+
+
+  function downloadImage() {
+    /* set new title */
+    chart_variable.options.title.text = 'Chart for profit of each product';
+    chart_variable.data.datasets.backgroundColor = '(75, 192, 192, 2)'
+    chart_variable.update({
+      duration: 0
+    });
+    // or, use
+    // chart_variable.update(0);
+
+    /* save as image */
+    var link = document.createElement('a');
+    link.href = chart_variable.toBase64Image();
+    link.download = 'myImage.png';
+    link.click();
+
+    /* rollback to old title */
+    chart_variable.options.title.text = 'Chart Title';
+    chart_variable.update({
+      duration: 0
+    });
+    // or, use
+    // chart_variable.update(0);
+  }
+
+</script>

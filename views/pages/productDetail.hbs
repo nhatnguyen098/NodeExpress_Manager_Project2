@@ -1,0 +1,157 @@
+<div class="content">
+  <div class="container-fluid"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header card-header-primary row">
+          <div class="col-6">
+            <h4 class="card-title mt-0">Product Information</h4>
+            <p class="card-category">Synthesize information of this product</p>
+          </div>
+          <div class="col-6">
+            <a href="/product-upload/{{proDetail._id}}" type="button"
+              class="btn btn-primary pull-right"><i class="material-icons">edit</i></a>
+          </div>
+
+
+        </div>
+
+        <div class="card-body">
+          <div class="row" style="padding-top:20px">
+            <legend class="col-form-legend col-sm-1-12" style="padding-left:70px;">
+              <h2>Product Detail</h2>
+            </legend>
+
+            <div class="col-7" style="padding-left:70px;">
+              <form>
+                {{#proDetail}}
+
+                <fieldset class="form-group row">
+                  <label class="col-sm-1-12 col-form-label">- Product ID: {{this._id}}</label>
+                  {{!-- <legend class="col-form-legend col-sm-1-12">Product Name: {{this.title}}.</legend> --}}
+                  <label class="col-sm-1-12 col-form-label">- Product Name: {{this.title}}</label>
+                  <div class="col-sm-1-12">
+                    <label class="col-sm-1-12 col-form-label">- Rating Star: {{this.productRate}}.</label>
+                  </div>
+                  <div class="col-sm-1-12">
+                    <label class="col-sm-1-12 col-form-label">- User group: {{this.userGroup}}.</label>
+                  </div>
+                  <div class="col-sm-1-12">
+                    <label class="col-sm-1-12 col-form-label">- Description product: {{this.description}}.</label>
+                  </div>
+                  <div class="col-sm-1-12">
+                    <label class="col-sm-1-12 col-form-label">- Price: $ {{this.price}}.</label>
+                  </div>
+                  {{/proDetail}}
+                  </br>
+                </fieldset>
+              </form>
+            </div>
+            <div class="col-3">
+              <div class="form-group">
+                <img src="../images/{{proDetail.imagePath}}"
+                  class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
+                  alt="Image Product" />
+              </div>
+
+              <div class="form-group">
+                <p class="text-center">{{proDetail.title}}</p>
+              </div>
+
+            </div>
+          </div>
+          <div class="container">
+            <div>
+              <legend class="col-form-legend col-sm-1-12">
+                <h2>Order List</h2>
+              </legend>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="text-primary">
+                  <th>
+                    No.
+                  </th>
+                  <th>
+                    Order Date
+                  </th>
+                  <th>
+                    Cus Name
+                  </th>
+                  <th>
+                    Cus Phone
+                  </th>
+                  <th>
+                    Cus Address
+                  </th>
+                  <th>
+                    Discount
+                  </th>
+                  <th>
+                    Total Quantity
+                  </th>
+                  <th>
+                    Total Price
+                  </th>
+                </thead>
+                <tbody>
+                  {{#each orderDetail}}
+                  <tr>
+                    <td>
+                      {{this.numberOrder}}
+                    </td>
+                    <td>
+                      {{this.orderDate}}
+                    </td>
+                    <td>
+                      {{this.userInfo.name}}
+                    </td>
+                    <td>
+                      {{this.userInfo.phoneNum}}
+                    </td>
+                    <td>
+                      {{this.userInfo.address}}
+                    </td>
+                    <td>
+                      {{this.couponCode.description}}
+                    </td>
+                    <td>
+                      {{this.totalQuantity}}
+                    </td>
+                    <td>
+                      $ {{this.totalPrice}}
+                    </td>
+                  </tr>
+                  {{/each}}
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                      <h4>Total:</h4>
+                    </td>
+                    <td>
+                      <h4>{{totalOrderQty}}</h4>
+                    </td>
+                    <td>
+                      <h4>$ {{totalOrderPrice}}</h4>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-11">
+              <a href="/productList" type="button" class="btn btn-primary btn-round pull-right">Back to list
+                <div class="ripple-container"></div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,61 @@
+<div class="content">
+  <div class="container-fluid"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card card-plain">
+        <div class="card-header card-header-primary">
+          <h4 class="card-title mt-0">Coupon List <a href="/coupon/couponDetail/new" class="btn btn-primary pull-right"
+              type="button">Create New</a></h4>
+          <p class="card-category">Synthesize information of each product</p>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="text-primary">
+                <th>
+                  No.
+                </th>
+                <th>
+                  Coupon ID
+                </th>
+                <th>
+                  Coupon description
+                </th>
+                <th>
+                  Discount
+                </th>
+                <th>
+                  Status
+                </th>
+              </thead>
+              <tbody>
+                {{#each coupons}}
+                <tr>
+                  <td>
+                    {{this.number}}
+                  </td>
+                  <td>
+                    {{this._id}}
+                  </td>
+                  <td>
+                    {{this.description}}
+                  </td>
+                  <td>
+                    {{this.discount}}
+                  </td>
+                  <td>
+                    {{this.status}}
+                  </td>
+                  <td>
+                    <a class="text-primary" href="/coupon/couponDetail/{{this._id}}">Detail</a>
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
