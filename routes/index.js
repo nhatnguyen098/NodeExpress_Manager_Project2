@@ -6,7 +6,6 @@ const multipart = require('connect-multiparty')
 
 
 
-
 // const upload = multer({ dest:'public/images' });
 /* GET home page. */
 
@@ -337,6 +336,15 @@ router.get('/product-update', (req, res) => {
 })
 
 
+
+
+router.get('/downloadCSV',(req,res)=>{
+  var ws = fs.createWriteStream('my.csv');
+  csv.write([["a1","b1"],["a2","b2"],["a3","b3"]],{headers:true}).pipe(ws)
+  res.render('pages/index', {
+    dashboard: 'dashboard'
+  })
+})
 
 
 

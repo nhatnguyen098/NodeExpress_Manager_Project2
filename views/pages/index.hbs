@@ -181,6 +181,9 @@
   </div>
 </div>
 
+
+
+
 <script type='text/javascript'>
 
   // random color
@@ -195,13 +198,13 @@
   var arrTitles = {{{ arrTitle }}}
   var arrProfits = {{{ arrProfit }}}
   var arrPercent = {{{ arrPercent }}}
-  DrawChart(arrTitles, arrProfits, 'bar', ' Profit percent of products', 'proProfit', true)
+  DrawChart(arrTitles, arrProfits, 'bar', 'Profit of each products', 'proProfit', true)
 
   // pie chart
   var title = [];
   var percent = [];
   arrPercent.forEach(s => { title.push(s.name); percent.push(s.percent) })
-  DrawChart(title, percent, 'pie', 'Profit of each products', 'percentChart', false)
+  DrawChart(title, percent, 'pie', 'Profit percent of products', 'percentChart', false)
   DrawChart(title, percent, 'line', 'Profit of each products', 'lineChart', true)
 
 

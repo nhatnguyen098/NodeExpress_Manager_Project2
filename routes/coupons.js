@@ -3,31 +3,41 @@ var router = express.Router();
 var Coupons = require('../models/coupon')
 const multer = require('multer');
 
-var storage = multer.diskStorage({ //multers disk storage settings
-    destination: function (req, file, cb) {
-        cb(null, './uploads/')
+var fs = require('fs')
+const csv = require('fast-csv');
+
+
+var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'up-download/uploads/')
     },
-    filename: function (req, file, cb) {
-        var datetimestamp = Date.now();
-        cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1])
+    filename: (req, file, cb) => {
+        cb(null, file.originalname)
     }
 });
 var upload = multer({ //multer settings
     storage: storage,
-    fileFilter : function(req, file, callback) { //file filter
-        if (['xls', 'xlsx'].indexOf(file.originalname.split('.')[file.originalname.split('.').length-1]) === -1) {
-            return callback(new Error('Wrong extension type'));
-        }
-        callback(null, true);
-    }
-}).single('file');
+});
 
-router.post('/read_xlsx',upload,(req,res)=>{
-    if(err){
-        res.json({error_code:1,err_desc:err});
-        return;
-   }
-   res.json({error_code:0,err_desc:null});
+router.get('/download', function (req, res, next) {
+    const file = 'up-download/download_template/template.csv';
+    res.download(file); // Set disposition and send it.
+});
+
+
+router.post('/read_csv', upload.single('file'), (req, res) => {
+    var fileRows = [],
+        fileHeader;
+        console.log(req.file)
+    csv.fromPath(req.file.path).on("data", function (data) {
+        fileRows.push(data); // push each row
+        console.log(data)
+    }).on("end", function () {
+        fs.unlinkSync(req.file.path); // remove temp file
+        //process "fileRows"
+    })
+    console.log(fileRows)
+    res.redirect('../coupon/couponList')
 })
 
 router.get('/couponList', isLoggedIn, async (req, res) => {
