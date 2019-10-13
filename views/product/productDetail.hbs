@@ -9,7 +9,7 @@
             <p class="card-category">Synthesize information of this product</p>
           </div>
           <div class="col-6">
-            <a href="/product-upload/{{proDetail._id}}" type="button"
+            <a href="/product/product-upload/{{proDetail._id}}" type="button"
               class="btn btn-primary pull-right"><i class="material-icons">edit</i></a>
           </div>
 
@@ -49,7 +49,7 @@
             </div>
             <div class="col-3">
               <div class="form-group">
-                <img src="../images/{{proDetail.imagePath}}"
+                <img src="../../images/{{proDetail.imagePath}}"
                   class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
                   alt="Image Product" />
               </div>
@@ -145,7 +145,7 @@
           </div>
           <div class="form-group row">
             <div class="col-sm-11">
-              <a href="/productList" type="button" class="btn btn-primary btn-round pull-right">Back to list
+              <a href="/product/productList" type="button" class="btn btn-primary btn-round pull-right">Back to list
                 <div class="ripple-container"></div>
               </a>
             </div>

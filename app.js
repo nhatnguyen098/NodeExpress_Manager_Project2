@@ -13,6 +13,7 @@ var indexRouter = require('./routes/index');
 var couponRouter = require('./routes/coupons')
 var orderRouter = require('./routes/order');
 var usersRouter = require('./routes/users');
+var productRouter = require('./routes/product')
 var bodyParser = require('body-parser')
 
 
@@ -38,7 +39,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
+app.use('/product',productRouter)
 app.use('/order',orderRouter);
 app.use('/coupon',couponRouter);
 app.use('/user', usersRouter);
