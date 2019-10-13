@@ -19,7 +19,7 @@ var upload = multer({ //multer settings
     storage: storage,
 });
 
-router.get('/download', function (req, res, next) {
+router.get('/exportData', function (req, res, next) {
     const file = 'up-download/download_template/template.csv';
     res.download(file); // Set disposition and send it.
 });
@@ -109,3 +109,5 @@ function isLoggedIn(req, res, next) {
     req.session.oldUrl = req.url;
     res.redirect('/user/signin');
 }
+
+

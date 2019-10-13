@@ -31,6 +31,46 @@ var storage = multer.diskStorage({
   
   });
 
+
+router.get('/exportData',(req,res)=>{
+  Product.find((err,docs)=>{
+    for (var i = 0; i < docs.length; i++) {
+      docs[i].number = (i + 1)
+      var quantity = 0;
+      var totalPrice = 0;
+      for (var s = 0; s < docs[i].orderList.length; s++) {
+        quantity += docs[i].orderList[s].totalQuantity
+        var discount = 1;
+        if (docs[i].orderList[s].couponCode.discount) {
+          discount = 1 - docs[i].orderList[s].couponCode.discount
+        }
+        totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
+      }
+      var obj = {
+        "qty": quantity,
+        "price": totalPrice.toFixed(1)
+      }
+      docs[i].orderInfo = obj
+    }
+
+
+
+
+
+    res.writeHead(200, {
+      'Content-Type': 'text/csv',
+      'Content-Disposition': 'attachment; filename=report.csv'
+  });
+  
+  // whereas this part is in charge of telling what data should be parsed and be downloaded
+  res.end(dataToCSV(docs,["Product Name","Total Quantity (bought)","Total Order","Total Profit"]),"binary");
+
+  })
+
+})
+
+
+
 router.get('/productList', isLoggedIn, function (req, res, next) {
     Product.find((err, docs) => {
       for (var i = 0; i < docs.length; i++) {
@@ -138,7 +178,12 @@ router.get('/productList', isLoggedIn, function (req, res, next) {
   })
 
 
+
+
+
+
 module.exports = router;
+
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
       return next();
@@ -146,3 +191,35 @@ function isLoggedIn(req, res, next) {
     req.session.oldUrl = req.url;
     res.redirect('/user/signin');
   }
+
+
+  function dataToCSV(dataList,headers){
+    var allObjects = [];
+    // Pushing the headers, as the first arr in the 2-dimensional array 'allObjects' would be the first row
+    allObjects.push(headers);
+
+    //Now iterating through the list and build up an array that contains the data of every object in the list, in the same order of the headers
+    dataList.forEach(function(object){
+        var arr = [];
+        arr.push(object.title);
+        arr.push(object.orderInfo.qty);
+        arr.push(object.orderList.length)
+        arr.push(object.orderInfo.price);
+
+        // Adding the array as additional element to the 2-dimensional array. It will evantually be converted to a single row
+        allObjects.push(arr)
+    });
+
+   // Initializing the output in a new variable 'csvContent'
+    var csvContent = "";
+
+    // The code below takes two-dimensional array and converts it to be strctured as CSV
+    // *** It can be taken apart from the function, if all you need is to convert an array to CSV
+    allObjects.forEach(function(infoArray, index){
+      var dataString = infoArray.join(",");
+      csvContent += index < allObjects.length ? dataString+ "\n" : dataString;
+    }); 
+
+    // Returning the CSV output
+    return csvContent;
+}

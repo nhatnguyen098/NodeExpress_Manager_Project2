@@ -37,6 +37,7 @@ router.get('/', isLoggedIn, async (req, res) => {
           totalToday += docs[i].orderList[s].totalPrice;
         }
       }
+
     }
     var dailySales = 0
 
