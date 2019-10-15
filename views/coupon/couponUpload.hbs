@@ -5,8 +5,12 @@
                 <div class="card">
                     <div class="card-header card-header-primary">
                         <h4 class="card-title">Upload Coupon
-                            <button type="button" class="btn btn-info pull-right" data-toggle="modal"
-                                data-target="#modelId">Import File</button></h4>
+                            <a type="button" class="btn btn-primary pull-right" data-toggle="modal"
+                                data-target="#modelId">Import File</button>
+                                <a href="/coupon/dowload_Template" type="button"
+                                    class="btn btn-primary pull-right">download</a>
+                        </h4>
+
                     </div>
                     <div class="card-body">
                         {{#if coupons}}
@@ -118,21 +122,32 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Modal title</h5>
+                <h5 class="modal-title">Import File CSV</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <form enctype="multipart/form-data" action="/coupon/read_csv" method="post">
-                    <input type="file" id="file" name="file" accept=".csv"/>
-                    <button type="submit" class="btn btn-primary">Save</button>
+
+                    <input class="custom-file-input" type="file" id="file" name="file" accept=".csv" required />
+                    <label class="custom-file-label" for="customFile">Choose file</label>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
                 </form>
+
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <a href="/coupon/download" type="button" class="btn btn-primary">download</a>
-            </div>
+
         </div>
     </div>
 </div>
+<script src="/javascripts/core/jquery.min.js"></script>
+<script>
+    // Add the following code if you want the name of the file appear on select
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+</script>

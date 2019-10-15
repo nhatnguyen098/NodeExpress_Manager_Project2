@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Coupons = require('../models/coupon')
 const multer = require('multer');
-
+const nodemailer = require('nodemailer');
 var fs = require('fs')
 const csv = require('fast-csv');
 
@@ -19,7 +19,7 @@ var upload = multer({ //multer settings
     storage: storage,
 });
 
-router.get('/exportData', function (req, res, next) {
+router.get('/dowload_Template', function (req, res, next) {
     const file = 'up-download/download_template/template.csv';
     res.download(file); // Set disposition and send it.
 });
@@ -28,15 +28,41 @@ router.get('/exportData', function (req, res, next) {
 router.post('/read_csv', upload.single('file'), (req, res) => {
     var fileRows = [],
         fileHeader;
-        console.log(req.file)
     csv.fromPath(req.file.path).on("data", function (data) {
+
         fileRows.push(data); // push each row
-        console.log(data)
+        // console.log(data)
     }).on("end", function () {
         fs.unlinkSync(req.file.path); // remove temp file
         //process "fileRows"
+        for (var i = 1; i < fileRows.length; i++) {
+            var local = fileRows[i]
+            var coupons = new Coupons({
+                discount: (local[1] / 100),
+                description: local[1] + ' %',
+                active: true,
+            })
+            coupons.save();
+            var obj = {
+                'email': local[0],
+                'discount': local[1] + ' %',
+                'code': coupons._id
+            }
+            var content = `
+            <p>- The COZA fashion give you some gifts</p>
+            <h3>Gifts Details</h3>
+            <ul>
+                <li>Email: ${obj.email}.</li>
+                <li>Start Date: ${new Date()}.</li>
+                <li>Discount: ${local[1]}</li>
+                <li>Conpon Code:${coupons._id}</li>
+            </ul>
+            `;
+            console.log(content)
+            sendMail(content, 'Customer Gratitude', obj.email)
+        }
     })
-    console.log(fileRows)
+
     res.redirect('../coupon/couponList')
 })
 
@@ -109,5 +135,30 @@ function isLoggedIn(req, res, next) {
     req.session.oldUrl = req.url;
     res.redirect('/user/signin');
 }
+async function sendMail(content, title, emailTo) {
+    let transporter = nodemailer.createTransport({
+        host: 'mail.google.com',
+        service: "Gmail",
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+            user: 'nhatnguyen00198@gmail.com', // generated ethereal user
+            pass: 'nhatnguyen' // generated ethereal password
+        },
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
 
+    // send mail with defined transport object
+    let info = await transporter.sendMail({
+        from: `"${title}" <foo@example.com>`, // sender address
+        to: `COZA Company, ${emailTo}`, // list of receivers
+        subject: 'Coza Services', // Subject line
+        text: 'Hello world?', // plain text body
+        html: content // html body
+    });
 
+    console.log('Message sent: %s', info.messageId);
+    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+}

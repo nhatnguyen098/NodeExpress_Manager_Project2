@@ -31,7 +31,6 @@ var storage = multer.diskStorage({
   
   });
 
-
 router.get('/exportData',(req,res)=>{
   Product.find((err,docs)=>{
     for (var i = 0; i < docs.length; i++) {
