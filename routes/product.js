@@ -77,6 +77,7 @@ router.post('/filter_Month', (req, res) => {
         docs[i].number = (i + 1)
         var quantity = 0;
         var totalPrice = 0;
+        var orders = 0;
         if (docs[i].orderList.length != 0) {
           for (var s = 0; s < docs[i].orderList.length; s++) {
             var date = docs[i].orderList[s].orderDate.toISOString().slice(5, 7)
@@ -87,13 +88,16 @@ router.post('/filter_Month', (req, res) => {
                 discount = 1 - docs[i].orderList[s].couponCode.discount
               }
               totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
+              sumOrder++
+              orders++
             }
           }
           var obj = {
             "qty": quantity,
-            "price": totalPrice.toFixed(1)
+            "price": totalPrice.toFixed(1),
+            "order": orders
           }
-          sumOrder += docs[i].orderList.length
+
           sumProfit += totalPrice
           sumQuantity += quantity
           docs[i].orderInfo = obj
@@ -118,6 +122,7 @@ router.get('/productList', isLoggedIn, function (req, res, next) {
       docs[i].number = (i + 1)
       var quantity = 0;
       var totalPrice = 0;
+      var orders = 0;
       for (var s = 0; s < docs[i].orderList.length; s++) {
         quantity += docs[i].orderList[s].totalQuantity
         var discount = 1;
@@ -128,7 +133,8 @@ router.get('/productList', isLoggedIn, function (req, res, next) {
       }
       var obj = {
         "qty": quantity,
-        "price": totalPrice.toFixed(1)
+        "price": totalPrice.toFixed(1),
+        "order": docs[i].orderList.length
       }
       sumOrder += docs[i].orderList.length
       sumProfit += totalPrice

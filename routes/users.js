@@ -31,10 +31,10 @@ router.get('/signup/:id', isLoggedIn, function (req, res, next) {
       if(doc.birthday){
         var birthday = doc.birthday.toISOString().slice(0, 10)
       }
-      res.render('user/signup', {person: 'person', users: doc, csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0, userBirth:birthday})
+      res.render('user/signup', {users: doc, csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0, userBirth:birthday,person: 'person'})
     })
   }else{
-    res.render('user/signup',{ csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0 })
+    res.render('user/signup',{ csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0, person: 'person' })
     // res.redirect('../signup')
   }
 

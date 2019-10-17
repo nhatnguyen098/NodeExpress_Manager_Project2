@@ -68,7 +68,6 @@
               <div class="card-body">
                 <h4 class="card-title">Chart for profit of each product</h4>
                 <p class="card-category">Summary of profits have been obtained</p>
-                <button type="button" id="saveImg" class="btn btn-primary">Save image</button>
               </div>
             </div>
             <div class="col-md-3">
@@ -98,7 +97,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-12">
+                {{!-- <div class="col-md-12">
                   <div class="card card-stats">
                     <div class="card-header card-header-primary card-header-icon">
                       <div class="card-icon">
@@ -130,7 +129,7 @@
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> --}}
               </div>
             </div>
           </div>
@@ -151,8 +150,8 @@
             <canvas id="percentChart" height="300"></canvas>
           </div>
           <div class="card-body">
-            <h4 class="card-title">Chart for profit of each product</h4>
-            <p class="card-category">Summary of profits have been obtained</p>
+            <h4 class="card-title">Profit percent of products</h4>
+            <p class="card-category">Summary of profits percent have been obtaine</p>
           </div>
           <div class="card-footer">
             <div class="stats">
@@ -167,8 +166,9 @@
             <canvas id="lineChart" height="300"></canvas>
           </div>
           <div class="card-body">
-            <h4 class="card-title">Chart for profit of each product</h4>
-            <p class="card-category">Summary of profits have been obtained</p>
+            <h4 class="card-title">Profit percent of products</h4>
+            <p class="card-category">Summary of profits percent have been obtained</p>
+            <button type="button" id="saveImg" class="btn btn-primary">Save image</button>
           </div>
           <div class="card-footer">
             <div class="stats">
@@ -185,36 +185,10 @@
 
 
 <script type='text/javascript'>
-
-  // random color
-  let dynamicColors = function () {
-    var r = Math.floor(Math.random() * 255);
-    var g = Math.floor(Math.random() * 255);
-    var b = Math.floor(Math.random() * 255);
-    return "rgba(" + r + "," + g + "," + b + "," + "0.3)";
-  }
-
-  // bar chart
-  var arrTitles = {{{ arrTitle }}}
-  var arrProfits = {{{ arrProfit }}}
-  var arrPercent = {{{ arrPercent }}}
-  DrawChart(arrTitles, arrProfits, 'bar', 'Profit of each products', 'proProfit', true)
-  saveImg.onclick = () => {
-
-  }
-  // pie chart
-  var title = [];
-  var percent = [];
-  arrPercent.forEach(s => { title.push(s.name); percent.push(s.percent) })
-  DrawChart(title, percent, 'pie', 'Profit percent of products', 'percentChart', false)
-  // line chart
-  DrawChart(title, percent, 'line', 'Profit of each products', 'lineChart', true)
-
-
   // drawChart
   function DrawChart(label, datas, optionChart, titleChart, tagMaster, displays) {
     var ctx = document.getElementById(tagMaster).getContext('2d');
-    tagMaster = new Chart(ctx, {
+    var chartjs = new Chart(ctx, {
       type: optionChart,
       data: {
         labels: label,
@@ -254,14 +228,50 @@
         }
       }
     });
+    saveImg.onclick = () => {
+      downloadImage(chartjs)
+    }
   }
 
+</script>
 
-  function downloadImage() {
+<script type='text/javascript'>
+
+  // random color
+  let dynamicColors = function () {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return "rgba(" + r + "," + g + "," + b + "," + "0.3)";
+  }
+
+  // bar chart
+  var arrTitles = {{{ arrTitle }}}
+  var arrProfits = {{{ arrProfit }}}
+  var arrPercent = {{{ arrPercent }}}
+  DrawChart(arrTitles, arrProfits, 'bar', 'Profit of each products', 'proProfit', true)
+
+  // pie chart
+  var title = [];
+  var percent = [];
+  arrPercent.forEach(s => { title.push(s.name); percent.push(s.percent) })
+  DrawChart(title, percent, 'pie', 'Profit percent of products', 'percentChart', false)
+  // line chart
+  DrawChart(title, percent, 'line', 'Profit of each products', 'lineChart', true)
+
+
+
+
+
+
+
+
+
+  function downloadImage(chartjs) {
     /* set new title */
-    tagMaster.options.title.text = 'Chart for profit of each product';
-    tagMaster.data.datasets.backgroundColor = '(75, 192, 192, 2)'
-    tagMaster.update({
+    chartjs.options.title.text = 'Chart for profit of each product';
+    chartjs.data.datasets.backgroundColor = '(75, 192, 192, 2)'
+    chartjs.update({
       duration: 0
     });
     // or, use
@@ -269,13 +279,13 @@
 
     /* save as image */
     var link = document.createElement('a');
-    link.href = tagMaster.toBase64Image();
+    link.href = chartjs.toBase64Image();
     link.download = 'myImage.png';
     link.click();
 
     /* rollback to old title */
-    tagMaster.options.title.text = 'Chart Title';
-    tagMaster.update({
+    chartjs.options.title.text = 'Chart Title';
+    chartjs.update({
       duration: 0
     });
     // or, use
