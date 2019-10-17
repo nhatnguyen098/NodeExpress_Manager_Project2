@@ -9,7 +9,8 @@
                     </div>
                     <div class="card-body">
                         {{#if pro}}
-                        <form action="/product/product-upload/{{keyUpdate}}" method="post" enctype="multipart/form-data">
+                        <form action="/product/product-upload/{{keyUpdate}}" method="post"
+                            enctype="multipart/form-data">
 
                             <div class="row">
                                 <div class="col-md-12">
@@ -48,17 +49,12 @@
                                     <div class="form-group">
                                         <label class="bmd-label-floating">Product Image:</label>
                                     </div>
-                                   
-                                        <input id="imagePath" name="imagePath"
-                                            accept="image/*" type="file" required />
-                                        {{!-- <label class="custom-file-label" for="proImage">Choose file</label> --}}
-               
-                                    
-                                    
-                                    
-                                
-                                      
-                                   
+                                    <div class="form-control custom-file">
+                                        <input class="custom-file-input" id="imagePath" name="imagePath"
+                                            accept="image/png,image/jpeg,application/pdf" type="file" required />
+                                        <label class="custom-file-label" for="customFile">Choose file</label>
+                                    </div>
+
                                 </div>
                             </div>
                             <div class="row">
@@ -115,8 +111,9 @@
                                         <label class="bmd-label-floating">Product Image:</label>
                                     </div>
                                     <div class="form-control custom-file">
-                                        <input id="imagePath" name="imagePath"
+                                        <input class="custom-file-input" id="imagePath" name="imagePath"
                                             accept="image/png,image/jpeg,application/pdf" type="file" required />
+                                        <label class="custom-file-label" for="customFile">Choose file</label>
                                         {{!-- <label class="custom-file-label" for="proImage">Choose file</label> --}}
                                     </div>
                                 </div>
@@ -144,3 +141,12 @@
         </div>
     </div>
 </div>
+
+<script src="/javascripts/core/jquery.min.js"></script>
+<script>
+    // Add the following code if you want the name of the file appear on select
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+</script>

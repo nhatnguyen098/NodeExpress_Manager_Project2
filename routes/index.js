@@ -25,11 +25,15 @@ router.get('/', isLoggedIn, async (req, res) => {
     for (var i = 0; i < docs.length; i++) {
       arrTitle.push(docs[i].title)
       arrProfit.push(docs[i].totalProfit)
-      totalProfit += docs[i].totalProfit
       totalOrder += docs[i].orderList.length;
-
+      var totalPrice = 0;
       for (var s = 0; s < docs[i].orderList.length; s++) {
-        // var dates = docs[i].orderList[s].orderDate.toISOString().slice(5, 7)
+        var discount = 1;
+        if (docs[i].orderList[s].couponCode.discount) {
+          discount = 1 - docs[i].orderList[s].couponCode.discount
+        }
+        totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
+
         if (docs[i].orderList[s].orderDate.toISOString().slice(0, 10) == d.toISOString().slice(0, 10)) {
           totalYesterday += docs[i].orderList[s].totalPrice
         }
@@ -37,6 +41,8 @@ router.get('/', isLoggedIn, async (req, res) => {
           totalToday += docs[i].orderList[s].totalPrice;
         }
       }
+      //totalProfit += docs[i].totalProfit
+      totalProfit += totalPrice
 
     }
     var dailySales = 0

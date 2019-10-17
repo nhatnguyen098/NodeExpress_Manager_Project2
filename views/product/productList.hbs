@@ -8,7 +8,35 @@
               class="btn btn-primary pull-right" type="button">Create New</a></h4>
           <p class="card-category">Synthesize information of each product</p>
         </div>
+
         <div class="card-body">
+
+          <form action="/product/filter_Month" method="post">
+            <div class="row">
+              <div class="form-group col-4">
+                <select class="form-control" name="searchMonth" id="searchMonth">
+                  <option value="0">All Month</option>
+                  <option value="01">January</option>
+                  <option value="02">February</option>
+                  <option value="03">March</option>
+                  <option value="04">April</option>
+                  <option value="05">May</option>
+                  <option value="06">June</option>
+                  <option value="07">July</option>
+                  <option value="08">August</option>
+                  <option value="09">September</option>
+                  <option value="10">October</option>
+                  <option value="11">November</option>
+                  <option value="12">December</option>
+                </select>
+              </div>
+              <div class="form-group col-4">
+                <button type="submit" class="btn btn-primary">Filter</button>
+              </div>
+            </div>
+          </form>
+
+
           <div class="table-responsive">
             <table class="table table-hover">
               <thead class="text-primary">
@@ -19,10 +47,10 @@
                   Product Name
                 </th>
                 <th>
-                  Total Quantity
+                  Product Price
                 </th>
                 <th>
-                  Product Price
+                  Total Quantity
                 </th>
                 <th>
                   Total Order
@@ -41,10 +69,10 @@
                     {{this.title}}
                   </td>
                   <td>
-                    {{this.orderInfo.qty}}
+                    $ {{this.price}}
                   </td>
                   <td>
-                    $ {{this.price}}
+                    {{this.orderInfo.qty}}
                   </td>
                   <td>
                     {{this.orderList.length}}
@@ -57,9 +85,18 @@
                   </td>
                 </tr>
                 {{/each}}
+                <tr class="font-weight-bold text-uppercase">
+                  <td></td>
+                  <td>Total all item:</td>
+                  <td></td>
+                  <td>{{sumQuantity}}</td>
+                  <td>{{sumOrder}}</td>
+                  <td>$ {{sumProfit}}</td>
+                  <td></td>
+                </tr>
               </tbody>
             </table>
-            <a name="" id="" class="btn btn-primary pull-right" href="/product/exportData" role="button">download</a>
+            <a class="btn btn-primary pull-right" href="/product/exportData" role="button">download</a>
           </div>
         </div>
       </div>
