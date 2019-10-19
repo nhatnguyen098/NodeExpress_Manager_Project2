@@ -13,6 +13,11 @@ router.get('/orderList', isLoggedIn, async (req, res) => {
                 x.number = number+1;
                 x.title = s.title;
                 x.category = s.userGroup
+                if(x.status == true){
+                    x.status = 'Done'
+                }else{
+                    x.status = 'Cancel'
+                }
                 arr.push(x)
                 number++;
             })

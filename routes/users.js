@@ -6,7 +6,7 @@ var csrf = require('csurf');
 var passport = require('passport')
 var csurfProtection = csrf();
 router.use(csurfProtection);
-
+//isLoggedIn
 router.get('/userList',isLoggedIn,(req,res)=>{
   User.find((err,docs)=>{
     for(var i = 0; i < docs.length; i++){
@@ -22,7 +22,7 @@ router.get('/userList',isLoggedIn,(req,res)=>{
 //   res.render('user/signup', { csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0 })
 // })
 
-router.get('/signup/:id', isLoggedIn, function (req, res, next) {
+router.get('/signup/:id',isLoggedIn, function (req, res, next) {
   var user = req.session.user;
   var messages = req.flash('error')
   if(req.params.id != 'new'){

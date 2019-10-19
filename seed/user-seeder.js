@@ -1,5 +1,8 @@
 var User = require('../models/user');
+var bcrypt = require('bcrypt-nodejs');
 var mongoose = require('mongoose');
+passport = require('passport');
+var localStrategy = require('passport-local').Strategy;
 const mongo = mongoose.connect('mongodb://localhost:27017/shopping',{useNewUrlParser: true});
 mongo.then(() => {
     console.log('connected');
@@ -20,9 +23,10 @@ var user = [
         birthday: ''
     })
 ];
+
 var done = 0;
 for(var i = 0 ; i< user.length; i++){
-    user[i].encryptPassword(user[i].password)
+    //user[i].encryptPassword(user[i].password)
     user[i].save(function(err,result){
         done++;
         if(done == user.length){

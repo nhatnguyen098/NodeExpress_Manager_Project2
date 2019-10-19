@@ -17,7 +17,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-02.jpg',
@@ -29,7 +30,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-04.jpg',
@@ -40,7 +42,8 @@ var products = [
         reviews: [
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-05.jpg',
@@ -51,7 +54,8 @@ var products = [
         reviews: [
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-07.jpg',
@@ -63,7 +67,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-08.jpg',
@@ -75,7 +80,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-10.jpg',
@@ -87,7 +93,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-13.jpg',
@@ -99,7 +106,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-14.jpg',
@@ -111,7 +119,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-16.jpg',
@@ -123,7 +132,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-06.jpg',
@@ -135,7 +145,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-15.jpg',
@@ -147,7 +158,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-11.jpg',
@@ -159,7 +171,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-03.jpg',
@@ -171,7 +184,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit:0
     }),
     new Product({
         imagePath: 'product-12.jpg',
@@ -183,7 +197,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
     new Product({
         imagePath: 'product-09.jpg',
@@ -195,7 +210,8 @@ var products = [
 
         ],
         orderList: [],
-        productRate: 0
+        productRate: 0,
+        totalProfit: 0
     }),
 ];
 var done = 0;

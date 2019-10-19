@@ -24,23 +24,33 @@ router.get('/', isLoggedIn, async (req, res) => {
   Product.find((err, docs) => {
     for (var i = 0; i < docs.length; i++) {
       arrTitle.push(docs[i].title)
-      arrProfit.push(docs[i].totalProfit)
       totalOrder += docs[i].orderList.length;
       var totalPrice = 0;
       for (var s = 0; s < docs[i].orderList.length; s++) {
-        var discount = 1;
-        if (docs[i].orderList[s].couponCode.discount) {
-          discount = 1 - docs[i].orderList[s].couponCode.discount
+        if(docs[i].orderList[s].status == false){
+          if(docs[i].orderList[s].couponCode.discount){
+            docs[i].totalProfit -= (docs[i].orderList[s].totalPrice * (1 - docs[i].orderList[s].couponCode.discount))
+          }else{
+            docs[i].totalProfit -= docs[i].orderList[s].totalPrice
+          }
+        
         }
-        totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
+        if (docs[i].orderList[s].status == true) {
+          var discount = 1;
+          if (docs[i].orderList[s].couponCode.discount) {
+            discount = 1 - docs[i].orderList[s].couponCode.discount
+          }
+          totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
 
-        if (docs[i].orderList[s].orderDate.toISOString().slice(0, 10) == d.toISOString().slice(0, 10)) {
-          totalYesterday += docs[i].orderList[s].totalPrice
-        }
-        if (docs[i].orderList[s].orderDate.toISOString().slice(0, 10) == today.toISOString().slice(0, 10)) {
-          totalToday += docs[i].orderList[s].totalPrice;
+          if (docs[i].orderList[s].orderDate.toISOString().slice(0, 10) == d.toISOString().slice(0, 10)) {
+            totalYesterday += docs[i].orderList[s].totalPrice
+          }
+          if (docs[i].orderList[s].orderDate.toISOString().slice(0, 10) == today.toISOString().slice(0, 10)) {
+            totalToday += docs[i].orderList[s].totalPrice;
+          }
         }
       }
+      arrProfit.push(docs[i].totalProfit)
       //totalProfit += docs[i].totalProfit
       totalProfit += totalPrice
 
@@ -52,11 +62,11 @@ router.get('/', isLoggedIn, async (req, res) => {
       obj_DailySales.dailySales = dailySales;
       obj_DailySales.icon = 'fa fa-long-arrow-up',
         obj_DailySales.color = 'text-success'
-    }else if(totalYesterday == 0 && totalToday == 0){
+    } else if (totalYesterday == 0 && totalToday == 0) {
       obj_DailySales.dailySales = dailySales;
       obj_DailySales.icon = 'fa fa-long-arrow-down',
         obj_DailySales.color = 'text-danger'
-    }else {
+    } else {
       dailySales = (((totalToday - totalYesterday) / totalYesterday) * 100).toFixed(1);
       if (dailySales <= 0) {
         obj_DailySales.dailySales = dailySales;
@@ -214,9 +224,15 @@ router.post('/filterOption', (req, res) => {
 
 
 
-router.get('/downloadCSV',(req,res)=>{
+router.get('/downloadCSV', (req, res) => {
   var ws = fs.createWriteStream('my.csv');
-  csv.write([["a1","b1"],["a2","b2"],["a3","b3"]],{headers:true}).pipe(ws)
+  csv.write([
+    ["a1", "b1"],
+    ["a2", "b2"],
+    ["a3", "b3"]
+  ], {
+    headers: true
+  }).pipe(ws)
   res.render('pages/index', {
     dashboard: 'dashboard'
   })

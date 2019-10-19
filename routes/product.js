@@ -81,7 +81,7 @@ router.post('/filter_Month', (req, res) => {
         if (docs[i].orderList.length != 0) {
           for (var s = 0; s < docs[i].orderList.length; s++) {
             var date = docs[i].orderList[s].orderDate.toISOString().slice(5, 7)
-            if (date == req.body.searchMonth) {
+            if (date == req.body.searchMonth && docs[i].orderList[s].status == true) {
               quantity += docs[i].orderList[s].totalQuantity
               var discount = 1;
               if (docs[i].orderList[s].couponCode.discount) {
@@ -124,12 +124,14 @@ router.get('/productList', isLoggedIn, function (req, res, next) {
       var totalPrice = 0;
       var orders = 0;
       for (var s = 0; s < docs[i].orderList.length; s++) {
-        quantity += docs[i].orderList[s].totalQuantity
-        var discount = 1;
-        if (docs[i].orderList[s].couponCode.discount) {
-          discount = 1 - docs[i].orderList[s].couponCode.discount
+        if (docs[i].orderList[s].status == true) {
+          quantity += docs[i].orderList[s].totalQuantity
+          var discount = 1;
+          if (docs[i].orderList[s].couponCode.discount) {
+            discount = 1 - docs[i].orderList[s].couponCode.discount
+          }
+          totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
         }
-        totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
       }
       var obj = {
         "qty": quantity,
@@ -162,9 +164,17 @@ router.get('/productDetail/:id', (req, res) => {
         if (docs.orderList[i].couponCode.discount) {
           docs.orderList[i].totalPrice -= (docs.orderList[i].totalPrice * docs.orderList[i].couponCode.discount)
         }
-        sumPrice += docs.orderList[i].totalPrice
-        sumQty += docs.orderList[i].totalQuantity
-        arrOrder.push(docs.orderList[i])
+
+        if (docs.orderList[i].status == true) {
+          docs.orderList[i].status = 'Done'
+          arrOrder.push(docs.orderList[i])
+          sumPrice += docs.orderList[i].totalPrice
+          sumQty += docs.orderList[i].totalQuantity
+          
+        } else if (docs.orderList[i].status == false) {
+          docs.orderList[i].status = 'Cancel'
+          arrOrder.push(docs.orderList[i])
+        }
       }
     }
     res.render('product/productDetail', {
@@ -176,6 +186,7 @@ router.get('/productDetail/:id', (req, res) => {
     })
   })
 })
+
 router.get('/product-upload/:id', (req, res) => {
   Product.findById(req.params.id, (err, doc) => {
     res.render('product/productUpload', {

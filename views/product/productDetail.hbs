@@ -9,8 +9,8 @@
             <p class="card-category">Synthesize information of this product</p>
           </div>
           <div class="col-6">
-            <a href="/product/product-upload/{{proDetail._id}}" type="button"
-              class="btn btn-primary pull-right"><i class="material-icons">edit</i></a>
+            <a href="/product/product-upload/{{proDetail._id}}" type="button" class="btn btn-primary pull-right"><i
+                class="material-icons">edit</i></a>
           </div>
 
 
@@ -93,6 +93,9 @@
                   <th>
                     Total Price
                   </th>
+                  <th>
+                    Status
+                  </th>
                 </thead>
                 <tbody>
                   {{#each orderDetail}}
@@ -121,6 +124,9 @@
                     <td>
                       $ {{this.totalPrice}}
                     </td>
+                    <td>
+                      {{this.status}}
+                    </td>
                   </tr>
                   {{/each}}
                   <tr>
@@ -129,6 +135,7 @@
                     <td></td>
                     <td></td>
                     <td></td>
+
                     <td>
                       <h4>Total:</h4>
                     </td>
