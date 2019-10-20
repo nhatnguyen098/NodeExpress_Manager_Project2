@@ -27,15 +27,15 @@ router.get('/', isLoggedIn, async (req, res) => {
       totalOrder += docs[i].orderList.length;
       var totalPrice = 0;
       for (var s = 0; s < docs[i].orderList.length; s++) {
-        if(docs[i].orderList[s].status == false){
-          if(docs[i].orderList[s].couponCode.discount){
+        if (docs[i].orderList[s].status == -1 || docs[i].orderList[s].status == 0) {
+          if (docs[i].orderList[s].couponCode.discount) {
             docs[i].totalProfit -= (docs[i].orderList[s].totalPrice * (1 - docs[i].orderList[s].couponCode.discount))
-          }else{
+          } else {
             docs[i].totalProfit -= docs[i].orderList[s].totalPrice
           }
-        
+
         }
-        if (docs[i].orderList[s].status == true) {
+        if (docs[i].orderList[s].status == 1) {
           var discount = 1;
           if (docs[i].orderList[s].couponCode.discount) {
             discount = 1 - docs[i].orderList[s].couponCode.discount
@@ -111,22 +111,23 @@ router.post('/', async (req, res) => {
       arrTitle.push(doc[i].title)
       var totalPrice = 0;
       for (var s = 0; s < doc[i].orderList.length; s++) {
+        
         var dates = doc[i].orderList[s].orderDate.toISOString().slice(0, 10)
-        if (dates >= start && dates <= end) {
+        if (dates >= start && dates <= end && doc[i].orderList[s].status == 1) {
           var discount = 1;
           if (doc[i].orderList[s].couponCode.discount) {
             discount = 1 - doc[i].orderList[s].couponCode.discount
           }
           totalPrice += (doc[i].orderList[s].totalQuantity * doc[i].price) * discount
-        } else if (!start && !end) {
+        } else if (!start && !end && doc[i].orderList[s].status == 1) {
           totalPrice += doc[i].orderList[s].totalQuantity * doc[i].price
-        } else if (dates >= start && !end) {
+        } else if (dates >= start && !end && doc[i].orderList[s].status == 1) {
           var discount = 1;
           if (doc[i].orderList[s].couponCode.discount) {
             discount = 1 - doc[i].orderList[s].couponCode.discount
           }
           totalPrice += (doc[i].orderList[s].totalQuantity * doc[i].price) * discount
-        } else if (!start && dates <= end) {
+        } else if (!start && dates <= end && doc[i].orderList[s].status == 1) {
           var discount = 1;
           if (doc[i].orderList[s].couponCode.discount) {
             discount = 1 - doc[i].orderList[s].couponCode.discount

@@ -7,12 +7,15 @@ var passport = require('passport')
 var csurfProtection = csrf();
 router.use(csurfProtection);
 //isLoggedIn
-router.get('/userList',isLoggedIn,(req,res)=>{
-  User.find((err,docs)=>{
-    for(var i = 0; i < docs.length; i++){
+router.get('/userList', isLoggedIn, (req, res) => {
+  User.find((err, docs) => {
+    for (var i = 0; i < docs.length; i++) {
       docs[i].number = (i + 1)
     }
-    res.render('user/userList', {users : docs, person: 'person'})
+    res.render('user/userList', {
+      users: docs,
+      person: 'person'
+    })
   })
 })
 
@@ -22,19 +25,48 @@ router.get('/userList',isLoggedIn,(req,res)=>{
 //   res.render('user/signup', { csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0 })
 // })
 
-router.get('/signup/:id',isLoggedIn, function (req, res, next) {
+router.get('/signup/:id', isLoggedIn, function (req, res, next) {
   var user = req.session.user;
   var messages = req.flash('error')
-  if(req.params.id != 'new'){
-    User.findById(req.params.id,(err,doc)=>{
+  if (req.params.id != 'new') {
+    User.findById(req.params.id, (err, doc) => {
+      var arr = []
       var birthday = ""
-      if(doc.birthday){
+      if (doc.birthday) {
         var birthday = doc.birthday.toISOString().slice(0, 10)
       }
-      res.render('user/signup', {users: doc, csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0, userBirth:birthday,person: 'person'})
+      Product.find((err, docs) => {
+        docs.forEach(x => {
+          x.orderList.forEach(s => {
+            if (s.userInfo.email) {
+              if (s.userInfo.email == doc.email) {
+                s.proId = x._id
+                s.orderDate = s.orderDate.toISOString().slice(0, 19)
+                arr.push(s)
+              }
+            }
+          })
+        })
+        console.log(arr)
+        res.render('user/signup', {
+          users: doc,
+          csrfToken: req.csrfToken(),
+          messages: messages,
+          hasErrors: messages.length > 0,
+          userBirth: birthday,
+          person: 'person',
+          orderList: arr,
+        })
+      })
     })
-  }else{
-    res.render('user/signup',{ csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0, person: 'person' })
+  } else {
+    res.render('user/signup', {
+      csrfToken: req.csrfToken(),
+      messages: messages,
+      hasErrors: messages.length > 0,
+      person: 'person'
+    })
+
     // res.redirect('../signup')
   }
 
@@ -49,14 +81,30 @@ router.post('/signup', passport.authenticate('local.signup', {
     req.session.oldUrl = null;
     res.redirect(oldUrl);
   } else {
-    res.redirect('./userList')
+    res.redirect('./user/userList')
   }
 })
 
-router.post('/userUpl/:id',(req,res)=>{
-  User.findOneAndUpdate({_id: req.params.id}, {$set: {'fullName': req.body.fullName, 'status': req.body.status, 'role': req.body.role, 'company': req.body.company, 'phoneNum': req.body.phoneNum, 'address': req.body.address, 'description': req.body.description, 'birthday': req.body.birthday }}, {upsert: true, new: true}, (err,doc)=>{
+router.post('/userUpl/:id', (req, res) => {
+  User.findOneAndUpdate({
+    _id: req.params.id
+  }, {
+    $set: {
+      'fullName': req.body.fullName,
+      'status': req.body.status,
+      'role': req.body.role,
+      'company': req.body.company,
+      'phoneNum': req.body.phoneNum,
+      'address': req.body.address,
+      'description': req.body.description,
+      'birthday': req.body.birthday
+    }
+  }, {
+    upsert: true,
+    new: true
+  }, (err, doc) => {
     console.log(req.body.birthday)
-    res.redirect('./userList')
+    res.redirect('./user/userList')
   })
 })
 
@@ -76,7 +124,12 @@ router.use('/', notLoggedIn, function (req, res, next) {
 
 router.get('/signin', function (req, res, next) {
   var messages = req.flash('error')
-  res.render('user/signin', { csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0, layout: false })
+  res.render('user/signin', {
+    csrfToken: req.csrfToken(),
+    messages: messages,
+    hasErrors: messages.length > 0,
+    layout: false
+  })
 })
 
 router.post('/signin', passport.authenticate('local.signin', {
@@ -88,7 +141,7 @@ router.post('/signin', passport.authenticate('local.signin', {
     req.session.oldUrl = null;
     res.redirect(oldUrl);
   } else {
-    res.redirect('./pages/index')
+    res.redirect('./user/userList')
   }
 })
 
@@ -103,6 +156,7 @@ function isLoggedIn(req, res, next) {
   }
   res.redirect('/');
 }
+
 function notLoggedIn(req, res, next) {
   if (!req.isAuthenticated()) {
     return next();

@@ -1,0 +1,157 @@
+<div class="content">
+  <div class="container-fluid"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header card-header-primary row">
+          <div class="col-6">
+            <h4 class="card-title mt-0">Order Information</h4>
+            <p class="card-category">Description about information of this order</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-8" style="padding-left:50px;">
+              <div class="card">
+                <div class="card-body">
+                  <form action="/order/updateStatus_Order" method="post">
+                    {{#orderDetail}}
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Order Date:</label>
+                          <p>{{this.orderDate}}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Customer Email:</label>
+                          <p>{{this.userInfo.email}}</p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Customer Name:</label>
+                          <p>{{this.userInfo.name}}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Customer Address:</label>
+                          <p>{{this.userInfo.address}}</p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Phone Number:</label>
+                          <p>{{this.userInfo.phoneNum}}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Product ID:</label>
+                          {{!-- <p id="proId" name="proId">{{this.proId}}</p> --}}
+
+                          <input class="form-control" id="proId" name="proId" value="{{this.proId}}" readonly />
+                           <input class="form-control" id="numOrder" name="numOrder" value="{{this.numberOrder}}" hidden="false" />
+
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Product Name:</label>
+                          <p>{{this.proName}}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Quantity:</label>
+                          <p>{{this.totalQuantity}}</p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Product Price:</label>
+                          <p>${{this.proPrice}}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Discount Code:</label>
+                          <p>{{this.couponCode._id}}</p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Discount (%):</label>
+                          <p>{{this.couponCode.description}}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Total price:</label>
+                          <p> ${{this.totalPrice}}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Order status:</label>
+                          <select class="form-control" name="status" id="status">
+                            <option value="{{this.status}}" selected hidden>{{this.status}}</option>
+                            <option value="1">Done</option>
+                            <option value="0">Pending</option>
+                            <option value="-1">Cancel</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <button name="" id="" class="btn btn-primary pull-right" role="button">Update</button>
+                    </div>
+
+                    {{/orderDetail}}
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="col-4" style="padding-right:50px;">
+              <div class="card">
+                <div class="card-body">
+                  <div class="form-group">
+                    <img src="../../images/{{orderDetail.imgPro}}"
+                      class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
+                      alt="Image Product" />
+                  </div>
+                  <h6 class="card-category text-gray text-center">{{orderDetail.proName}}</h6>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-12">
+              <a href="/order/orderList" type="button" class="btn btn-primary btn-round pull-right">Back to list
+                <div class="ripple-container"></div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -89,6 +89,7 @@ router.get('/couponDetail/:id', (req, res) => {
         })
     } else {
         Coupons.findById(req.params.id, (err, doc) => {
+            doc.discount = doc.discount * 100
             res.render('coupon/couponUpload', {
                 coupons: doc,
                 coupon: 'coupon',

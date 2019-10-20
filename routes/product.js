@@ -81,7 +81,7 @@ router.post('/filter_Month', (req, res) => {
         if (docs[i].orderList.length != 0) {
           for (var s = 0; s < docs[i].orderList.length; s++) {
             var date = docs[i].orderList[s].orderDate.toISOString().slice(5, 7)
-            if (date == req.body.searchMonth && docs[i].orderList[s].status == true) {
+            if (date == req.body.searchMonth && docs[i].orderList[s].status == 1) {
               quantity += docs[i].orderList[s].totalQuantity
               var discount = 1;
               if (docs[i].orderList[s].couponCode.discount) {
@@ -124,7 +124,7 @@ router.get('/productList', isLoggedIn, function (req, res, next) {
       var totalPrice = 0;
       var orders = 0;
       for (var s = 0; s < docs[i].orderList.length; s++) {
-        if (docs[i].orderList[s].status == true) {
+        if (docs[i].orderList[s].status == 1) {
           quantity += docs[i].orderList[s].totalQuantity
           var discount = 1;
           if (docs[i].orderList[s].couponCode.discount) {
@@ -165,14 +165,17 @@ router.get('/productDetail/:id', (req, res) => {
           docs.orderList[i].totalPrice -= (docs.orderList[i].totalPrice * docs.orderList[i].couponCode.discount)
         }
 
-        if (docs.orderList[i].status == true) {
+        if (docs.orderList[i].status == 1) {
           docs.orderList[i].status = 'Done'
           arrOrder.push(docs.orderList[i])
           sumPrice += docs.orderList[i].totalPrice
           sumQty += docs.orderList[i].totalQuantity
           
-        } else if (docs.orderList[i].status == false) {
+        } else if (docs.orderList[i].status == -1) {
           docs.orderList[i].status = 'Cancel'
+          arrOrder.push(docs.orderList[i])
+        }else if(docs.orderList[i].status == 0){
+          docs.orderList[i].status = 'Pending'
           arrOrder.push(docs.orderList[i])
         }
       }

@@ -1,8 +1,3 @@
-<!--
-        Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
-
-        Tip 2: you can also add an image using data-image tag
-    -->
 <div class="content">
     <div class="container-fluid">
         <div class="row">
@@ -45,6 +40,8 @@
                                     <div class="form-group">
                                         <label class="bmd-label-floating">Status</label>
                                         <select selected id="status" name="status" class="form-control">
+                                            <option value="{{users.status}}" selected hidden>{{users.status}}
+                                            </option>
                                             <option value="Active">Active</option>
                                             <option value="inActive">isActive</option>
                                         </select>
@@ -53,7 +50,9 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="bmd-label-floating">User role</label>
-                                        <select selected id="role" name="role" class="form-control">
+                                        <select id="role" name="role" class="form-control">
+                                            <option value="{{users.role}}" selected hidden>{{users.role}}
+                                            </option>
                                             <option value="Manager">Manager</option>
                                             <option value="Customer">Customer</option>
                                         </select>
@@ -179,6 +178,7 @@
                                     <div class="form-group">
                                         <label class="bmd-label-floating">Role</label>
                                         <select class="form-control" id="role" name="role">
+
                                             <option value="Customer">Customer</option>
                                             <option value="Manager">Manager</option>
                                         </select>
@@ -222,16 +222,42 @@
                         </a>
                     </div>
                     <div class="card-body">
-                        <h6 class="card-category text-gray">CEO / Co-Founder</h6>
-                        <h4 class="card-title">Alec Thompson</h4>
+                        {{!-- CEO / Co-Founder of COZA company --}}
+                        <h6 class="card-category text-gray">{{users.role}} of COZA company</h6>
+                        <h4 class="card-title">{{users.fullName}}</h4>
                         <p class="card-description">
-                            Don't be scared of the truth because we need to restart the human foundation in
-                            truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the
-                            back is...
+                            {{users.description}}
                         </p>
-                        <a href="#pablo" class="btn btn-primary btn-round">Follow</a>
+                        {{#if orderList}}
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Order List</h3>
+                            </div>
+                            {{#each orderList}}
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="form-group">
+                                        {{this.orderDate}}
+                                    </div>
+
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <a href="/order/orderDetail/{{this.proId}}-{{this.numberOrder}}">Detail</a>
+                                    </div>
+
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+
+                        {{/if}}
                     </div>
                 </div>
+            </div>
+            <div class="col-12">
+                <a type="button" href="/user/userList" class="btn btn-primary pull-right">Back to List</a>
             </div>
         </div>
     </div>

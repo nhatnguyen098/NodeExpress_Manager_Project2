@@ -12,50 +12,76 @@
             <a href="/product/product-upload/{{proDetail._id}}" type="button" class="btn btn-primary pull-right"><i
                 class="material-icons">edit</i></a>
           </div>
-
-
         </div>
-
         <div class="card-body">
-          <div class="row" style="padding-top:20px">
-            <legend class="col-form-legend col-sm-1-12" style="padding-left:70px;">
-              <h2>Product Detail</h2>
-            </legend>
+          <div class="row">
+            <div class="col-8" style="padding-left:50px;">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Product Detail</h4>
+                  <p class="card-category">Description about information of product</p>
+                </div>
+                <div class="card-body" style="padding-bottom:117px;">
+                  <form>
+                    {{#proDetail}}
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Product ID:</label>
+                          <p>{{this._id}}</p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Product Name:</label>
+                          <p>{{this.title}}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Category:</label>
+                          <p> {{this.userGroup}}</p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Product Rate:</label>
+                          <p>{{this.productRate}}</p>
+                        </div>
+                      </div>
+                    </div>
 
-            <div class="col-7" style="padding-left:70px;">
-              <form>
-                {{#proDetail}}
-
-                <fieldset class="form-group row">
-                  <label class="col-sm-1-12 col-form-label">- Product ID: {{this._id}}</label>
-                  {{!-- <legend class="col-form-legend col-sm-1-12">Product Name: {{this.title}}.</legend> --}}
-                  <label class="col-sm-1-12 col-form-label">- Product Name: {{this.title}}</label>
-                  <div class="col-sm-1-12">
-                    <label class="col-sm-1-12 col-form-label">- Rating Star: {{this.productRate}}.</label>
-                  </div>
-                  <div class="col-sm-1-12">
-                    <label class="col-sm-1-12 col-form-label">- User group: {{this.userGroup}}.</label>
-                  </div>
-                  <div class="col-sm-1-12">
-                    <label class="col-sm-1-12 col-form-label">- Description product: {{this.description}}.</label>
-                  </div>
-                  <div class="col-sm-1-12">
-                    <label class="col-sm-1-12 col-form-label">- Price: $ {{this.price}}.</label>
-                  </div>
-                  {{/proDetail}}
-                  </br>
-                </fieldset>
-              </form>
-            </div>
-            <div class="col-3">
-              <div class="form-group">
-                <img src="../../images/{{proDetail.imagePath}}"
-                  class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
-                  alt="Image Product" />
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Product Description:</label>
+                          <p>{{this.description}}</p>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Price:</label>
+                          <p> ${{this.price}}</p>
+                        </div>
+                      </div>
+                    </div>
+                    {{/proDetail}}
+                  </form>
+                </div>
               </div>
-
-              <div class="form-group">
-                <p class="text-center">{{proDetail.title}}</p>
+            </div>
+            <div class="col-4" style="padding-right:50px;">
+              <div class="card">
+                <div class="card-body">
+                  <div class="form-group">
+                    <img src="../../images/{{proDetail.imagePath}}"
+                      class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
+                      alt="Image Product" />
+                  </div>
+                  <h6 class="card-category text-gray text-center">{{proDetail.title}}</h6>
+                </div>
               </div>
 
             </div>
