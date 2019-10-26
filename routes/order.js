@@ -67,25 +67,65 @@ router.get('/orderDetail/:numberOrder', (req, res) => {
 })
 
 router.post('/updateStatus_Order', async (req, res) => {
-    console.log(req.body.proId)
-    console.log(req.body.numOrder)
-    console.log(req.body.status)
-    var updStatus = await Product.findOneAndUpdate({
-        '_id': req.body.proId,
-        'orderList.numberOrder': Number(req.body.numOrder)
-    }, {
-        "$set": {
-            'orderList.$.status': Number(req.body.status),
+    // console.log(req.body.proId)
+    // console.log(req.body.numOrder)
+    // console.log(req.body.status)
+    var lastStatus = 0
+    var pro = Product.findById(req.body.proId, async (err,doc)=>{
+        if(doc.orderList.length >0 ){
+            doc.orderList.forEach(s=>{
+                if(s.numberOrder == req.body.numOrder){
+                    lastStatus = s.status
+                }
+            })
         }
-    }, {
-        upsert: true,
-        new: true
-    }, async (err, docs) => {
-        if (err) {
-            console.log(err)
-        }
-        res.redirect('orderList')
+
+        var updStatus = await Product.findOneAndUpdate({
+            '_id': req.body.proId,
+            'orderList.numberOrder': Number(req.body.numOrder)
+        }, {
+            "$set": {
+                'orderList.$.status': Number(req.body.status),
+            }
+        }, {
+            upsert: true,
+            new: true
+        }, async (err, docs) => {
+            if (err) {
+                console.log(err)
+            }
+            // console.log(docs)
+            var totalPro_Profit = docs.totalProfit;
+            await docs.orderList.forEach(s => {
+                if (s.status == 1 && s.numberOrder == Number(req.body.numOrder) && (lastStatus == 0 || lastStatus == -1)) {
+                    totalPro_Profit += s.totalHasDiscount
+                } else if ((s.status == 0 || s.status == -1) && s.numberOrder == Number(req.body.numOrder) && lastStatus == 1) {
+                    if (totalPro_Profit != 0) {
+                        totalPro_Profit -= s.totalHasDiscount
+                    }
+    
+                }
+            })
+            var pro = await Product.findOneAndUpdate({
+                _id: req.body.proId
+            }, {
+                $set: {
+                    totalProfit: totalPro_Profit
+                }
+            }, {
+                upsert: true,
+                new: true
+            }, (err, doc) => {
+                console.log(doc)
+            })
+            // console.log(docs)
+            res.redirect('orderList')
+        })
     })
+    
+
+    console.log(lastStatus)
+    
 
 })
 

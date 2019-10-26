@@ -8,14 +8,26 @@
           <p class="card-category">Synthesize information of each product</p>
         </div>
         <div class="card-body">
-          <form action="" method="post">
-            <div class="col-4 form-group">
-              <select class="form-control" name="" id="">
-                <option></option>
-                <option></option>
-                <option></option>
-              </select>
+          <form action="/user/filterEmail" method="post">
+            {{!-- {{#if hasErrors}}
+            <div class="wrap-input100 m-b-36 alert alert-danger">
+              {{#each messages}}
+              <p class="text-danger">{{this}}</p>
+              {{/each}}
             </div>
+            {{/if}} --}}
+            <div class="row ">
+              <div class="col-4 form-group">
+                <label for="">Email:</label>
+                <input type="text" class="form-control" name="email" id="email"
+                  placeholder="Please input customer email">
+              </div>
+              <div class="col-4 form-group">
+                {{!-- <input type="hidden" name="_csrf" value="{{csrfToken}}" /> --}}
+                <button type="submit" class="btn btn-primary">Filter</button>
+              </div>
+            </div>
+
           </form>
           <div class="table-responsive">
             <table class="table table-hover">

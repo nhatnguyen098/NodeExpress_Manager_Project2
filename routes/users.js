@@ -4,9 +4,44 @@ var Product = require('../models/product')
 var User = require('../models/user')
 var csrf = require('csurf');
 var passport = require('passport')
+
+
+
+
+
+router.post('/filterEmail', function (req, res, next) {
+  console.log(req.body.email)
+  if(req.body.email && req.body.email.trim()){
+    User.find({
+      'email': {
+        '$regex' : req.body.email, '$options' : 'i'
+      }
+    },async (err, doc) => {
+      var number = 1
+      doc.forEach(x=>{
+        x.number = number
+        number++
+      })
+      await res.render('user/userList', {
+        users: doc,
+        person: 'person',
+        // csrfToken: req.csrfToken(),
+      })
+    })
+  }else{
+    res.redirect('userList')
+  }
+  
+})
+
+
+
+
+
 var csurfProtection = csrf();
 router.use(csurfProtection);
 //isLoggedIn
+
 router.get('/userList', isLoggedIn, (req, res) => {
   User.find((err, docs) => {
     for (var i = 0; i < docs.length; i++) {
@@ -19,11 +54,7 @@ router.get('/userList', isLoggedIn, (req, res) => {
   })
 })
 
-// router.get('/signup', function (req, res, next) {
-//   var messages = req.flash('error')
-//   var birthday = ""
-//   res.render('user/signup', { csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0 })
-// })
+
 
 router.get('/signup/:id', isLoggedIn, function (req, res, next) {
   var user = req.session.user;
@@ -145,6 +176,33 @@ router.post('/signin', passport.authenticate('local.signin', {
   }
 })
 
+// router.post('/filterEmail', passport.authenticate('local.findEmail', {
+//   failureRedirect: './userList',
+//   failureFlash: true,
+// }), function (req, res) {
+//   if (req.session.oldUrl) {
+//     var oldUrl = req.session.oldUrl;
+//     req.session.oldUrl = null;
+//     // res.redirect(oldUrl);
+//     var messages = req.flash('error')
+//     res.render('user/userList', {
+//       users: req.session.email,
+//       person: 'person',
+//       csrfToken: req.csrfToken(),
+//       messages: messages,
+//       hasErrors: messages.length > 0,
+//     })
+//   } else {
+//     var messages = req.flash('error')
+//     res.render('user/userList', {
+//       users: req.session.email,
+//       person: 'person',
+//       csrfToken: req.csrfToken(),
+//       messages: messages,
+//       hasErrors: messages.length > 0,
+//     })
+//   }
+// })
 
 
 

@@ -263,12 +263,14 @@
   var arrPercent = {{{ arrPercent }}}
   DrawChart(arrTitles, arrProfits, 'bar', 'Profit of each products', 'proProfit', true)
 
-  // pie chart
+  // set up data for chart
   var title = [];
   var percent = [];
   arrPercent.forEach(s => { title.push(s.name); percent.push(s.percent) })
+  // pie chart
   DrawChart(title, percent, 'pie', 'Profit percent of products', 'percentChart', false)
   // line chart
+  
   DrawChart(title, percent, 'line', 'Profit of each products', 'lineChart', true)
 
 

@@ -202,7 +202,7 @@ var products = [
     }),
     new Product({
         imagePath: 'product-09.jpg',
-        title: 'Herschel supply',
+        title: 'Vans Shoe',
         description: 'Using for Men/Women',
         userGroup: 'shoes',
         price: 79,

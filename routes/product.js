@@ -35,25 +35,30 @@ const upload = multer({
 
 router.get('/exportData', (req, res) => {
   Product.find((err, docs) => {
+    // var totalQty = 0;
+    // var SumPrice = 0;
     for (var i = 0; i < docs.length; i++) {
       docs[i].number = (i + 1)
       var quantity = 0;
       var totalPrice = 0;
       for (var s = 0; s < docs[i].orderList.length; s++) {
-        quantity += docs[i].orderList[s].totalQuantity
-        var discount = 1;
-        if (docs[i].orderList[s].couponCode.discount) {
-          discount = 1 - docs[i].orderList[s].couponCode.discount
+        if(docs[i].orderList[s].status == 1){
+          quantity += docs[i].orderList[s].totalQuantity
+          var discount = 1;
+          if (docs[i].orderList[s].couponCode.discount) {
+            discount = 1 - docs[i].orderList[s].couponCode.discount
+          }
+          totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
         }
-        totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
       }
+      //totalQty += quantity
+      //SumPrice += totalPrice
       var obj = {
         "qty": quantity,
         "price": totalPrice.toFixed(1)
       }
       docs[i].orderInfo = obj
     }
-
     res.writeHead(200, {
       'Content-Type': 'text/csv',
       'Content-Disposition': 'attachment; filename=report.csv'

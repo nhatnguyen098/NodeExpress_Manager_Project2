@@ -11,8 +11,8 @@ let totalAllOrder = 0;
 let obj_DailySales = {}
 
 router.get('/', isLoggedIn, async (req, res) => {
-  var arrTitle = []
-  var arrProfit = []
+  var arrTitle = [] // title for chart
+  var arrProfit = [] // data for colum chart
   var arrPercent = []
   var totalProfit = 0;
   var totalOrder = 0;
@@ -23,36 +23,38 @@ router.get('/', isLoggedIn, async (req, res) => {
   var totalToday = 0;
   Product.find((err, docs) => {
     for (var i = 0; i < docs.length; i++) {
-      arrTitle.push(docs[i].title)
-      totalOrder += docs[i].orderList.length;
-      var totalPrice = 0;
+      arrTitle.push(docs[i].title) // arr for product name
+      totalOrder += docs[i].orderList.length; // total order each product
+      // var totalPrice = 0;
       for (var s = 0; s < docs[i].orderList.length; s++) {
-        if (docs[i].orderList[s].status == -1 || docs[i].orderList[s].status == 0) {
-          if (docs[i].orderList[s].couponCode.discount) {
-            docs[i].totalProfit -= (docs[i].orderList[s].totalPrice * (1 - docs[i].orderList[s].couponCode.discount))
-          } else {
-            docs[i].totalProfit -= docs[i].orderList[s].totalPrice
-          }
+        // if (docs[i].orderList[s].status == -1 || docs[i].orderList[s].status == 0) {
+        //   if (docs[i].orderList[s].couponCode.discount) {
+        //     docs[i].totalProfit -= (docs[i].orderList[s].totalPrice * (1 - docs[i].orderList[s].couponCode.discount))
+        //   } else {
+        //     docs[i].totalProfit -= docs[i].orderList[s].totalPrice
+        //   }
 
-        }
+        // }
+        // totalPrice = docs[i].totalPrice
         if (docs[i].orderList[s].status == 1) {
-          var discount = 1;
-          if (docs[i].orderList[s].couponCode.discount) {
-            discount = 1 - docs[i].orderList[s].couponCode.discount
-          }
-          totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
+          // var discount = 1;
+          // if (docs[i].orderList[s].couponCode.discount) {
+          //   discount = 1 - docs[i].orderList[s].couponCode.discount
+          // }
+          // totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
 
           if (docs[i].orderList[s].orderDate.toISOString().slice(0, 10) == d.toISOString().slice(0, 10)) {
-            totalYesterday += docs[i].orderList[s].totalPrice
+            totalYesterday += docs[i].orderList[s].totalHasDiscount
           }
           if (docs[i].orderList[s].orderDate.toISOString().slice(0, 10) == today.toISOString().slice(0, 10)) {
-            totalToday += docs[i].orderList[s].totalPrice;
+            totalToday += docs[i].orderList[s].totalHasDiscount
           }
         }
+
       }
       arrProfit.push(docs[i].totalProfit)
       //totalProfit += docs[i].totalProfit
-      totalProfit += totalPrice
+      totalProfit += docs[i].totalProfit
 
     }
     var dailySales = 0
@@ -100,6 +102,52 @@ router.get('/', isLoggedIn, async (req, res) => {
   })
 })
 
+router.get('/lineChart', (req, res) => {
+  var title_LineChart = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  var month = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+
+  Product.find(async (err, docs) => {
+    var ProfitbyMonth = []
+    month.forEach(s => {
+      var totalMonth = 0;
+      docs.forEach(x => {
+        var obj = {}
+
+        if (x.orderList.length > 0) {
+
+          x.orderList.forEach(a => {
+
+            // console.log(a.orderDate.toISOString().slice(5, 7))
+            if (a.orderDate.toISOString().slice(5, 7) == s && a.status == 1) {
+              if (a.couponCode.discount) {
+                totalMonth += (a.totalPrice - (a.totalPrice * a.couponCode.discount))
+              } else {
+                totalMonth += a.totalPrice
+              }
+
+
+            }
+
+          })
+
+
+
+        }
+        obj.profit = totalMonth
+      })
+
+      // console.log(obj)
+      ProfitbyMonth.push(obj)
+      obj.month = s
+    })
+    console.log(ProfitbyMonth)
+    res.redirect('/')
+  })
+
+})
+
+
+
 router.post('/', async (req, res) => {
   var start = req.body.start.trim();
   var end = req.body.end.trim();
@@ -111,16 +159,18 @@ router.post('/', async (req, res) => {
       arrTitle.push(doc[i].title)
       var totalPrice = 0;
       for (var s = 0; s < doc[i].orderList.length; s++) {
-        
+
         var dates = doc[i].orderList[s].orderDate.toISOString().slice(0, 10)
         if (dates >= start && dates <= end && doc[i].orderList[s].status == 1) {
-          var discount = 1;
-          if (doc[i].orderList[s].couponCode.discount) {
-            discount = 1 - doc[i].orderList[s].couponCode.discount
-          }
-          totalPrice += (doc[i].orderList[s].totalQuantity * doc[i].price) * discount
+          // var discount = 1;
+          // if (doc[i].orderList[s].couponCode.discount) {
+          //   discount = 1 - doc[i].orderList[s].couponCode.discount
+          // }
+          // totalPrice += (doc[i].orderList[s].totalQuantity * doc[i].price) * discount
+          totalPrice += doc[i].orderList[s].totalHasDiscount
         } else if (!start && !end && doc[i].orderList[s].status == 1) {
-          totalPrice += doc[i].orderList[s].totalQuantity * doc[i].price
+          // totalPrice += doc[i].orderList[s].totalQuantity * doc[i].price
+          totalPrice += doc[i].orderList[s].totalHasDiscount
         } else if (dates >= start && !end && doc[i].orderList[s].status == 1) {
           var discount = 1;
           if (doc[i].orderList[s].couponCode.discount) {
@@ -128,11 +178,12 @@ router.post('/', async (req, res) => {
           }
           totalPrice += (doc[i].orderList[s].totalQuantity * doc[i].price) * discount
         } else if (!start && dates <= end && doc[i].orderList[s].status == 1) {
-          var discount = 1;
-          if (doc[i].orderList[s].couponCode.discount) {
-            discount = 1 - doc[i].orderList[s].couponCode.discount
-          }
-          totalPrice += (doc[i].orderList[s].totalQuantity * doc[i].price) * discount
+          // var discount = 1;
+          // if (doc[i].orderList[s].couponCode.discount) {
+          //   discount = 1 - doc[i].orderList[s].couponCode.discount
+          // }
+          // totalPrice += (doc[i].orderList[s].totalQuantity * doc[i].price) * discount
+          totalPrice += doc[i].orderList[s].totalHasDiscount
         }
       }
       arrProfit.push(totalPrice)
