@@ -25,6 +25,8 @@ router.post('/filterEmail', function (req, res, next) {
       await res.render('user/userList', {
         users: doc,
         person: 'person',
+        sessionUser: req.session.user,
+        notification: req.session.messsages
         // csrfToken: req.csrfToken(),
       })
     })
@@ -49,7 +51,9 @@ router.get('/userList', isLoggedIn, (req, res) => {
     }
     res.render('user/userList', {
       users: docs,
-      person: 'person'
+      person: 'person',
+      sessionUser: req.session.user,
+      notification: req.session.messsages
     })
   })
 })
@@ -78,7 +82,6 @@ router.get('/signup/:id', isLoggedIn, function (req, res, next) {
             }
           })
         })
-        console.log(arr)
         res.render('user/signup', {
           users: doc,
           csrfToken: req.csrfToken(),
@@ -87,6 +90,8 @@ router.get('/signup/:id', isLoggedIn, function (req, res, next) {
           userBirth: birthday,
           person: 'person',
           orderList: arr,
+          sessionUser: req.session.user,
+          notification: req.session.messsages
         })
       })
     })
@@ -95,7 +100,9 @@ router.get('/signup/:id', isLoggedIn, function (req, res, next) {
       csrfToken: req.csrfToken(),
       messages: messages,
       hasErrors: messages.length > 0,
-      person: 'person'
+      person: 'person',
+      sessionUser: req.session.user,
+      notification: req.session.messsages
     })
 
     // res.redirect('../signup')
@@ -133,9 +140,21 @@ router.post('/userUpl/:id', (req, res) => {
   }, {
     upsert: true,
     new: true
-  }, (err, doc) => {
-    console.log(req.body.birthday)
-    res.redirect('./user/userList')
+  }, async(err, doc) => {
+    await Product.updateMany({
+      'orderList.userInfo.email': doc.email
+    },{
+      '$set':{
+        'orderList.$.userInfo.name':req.body.fullName,
+        'orderList.$.userInfo.phoneNum':req.body.phoneNum,
+        'orderList.$.userInfo.address': req.body.address,
+      }
+    },{
+      upsert:true,
+      new:true
+    },(errs,rs)=>{
+    })
+    await res.redirect('./user/userList')
   })
 })
 

@@ -3,209 +3,152 @@ var router = express.Router();
 var Product = require('../models/product')
 const multer = require('multer');
 const multipart = require('connect-multiparty')
-
+var chart = require('../config/setup_Chart')
+var glosbe_Daily = require('../config/setup_GlosbeDaily')
+var filter_Func = require('../config/filter_Func')
+var auto_updateStatusOrder = require('../config/auto_updateStatusOrder')
 
 
 let totalItemProfit = 0;
 let totalAllOrder = 0;
 let obj_DailySales = {}
 
+
 router.get('/', isLoggedIn, async (req, res) => {
-  var arrTitle = [] // title for chart
-  var arrProfit = [] // data for colum chart
-  var arrPercent = []
   var totalProfit = 0;
   var totalOrder = 0;
-  var d = new Date(); // Today!
-  var today = new Date()
-  d.setDate(d.getDate() - 1); // Yesterday!
-  var totalYesterday = 0;
-  var totalToday = 0;
-  Product.find((err, docs) => {
+  Product.find(async (err, docs) => {
     for (var i = 0; i < docs.length; i++) {
-      arrTitle.push(docs[i].title) // arr for product name
       totalOrder += docs[i].orderList.length; // total order each product
-      // var totalPrice = 0;
-      for (var s = 0; s < docs[i].orderList.length; s++) {
-        // if (docs[i].orderList[s].status == -1 || docs[i].orderList[s].status == 0) {
-        //   if (docs[i].orderList[s].couponCode.discount) {
-        //     docs[i].totalProfit -= (docs[i].orderList[s].totalPrice * (1 - docs[i].orderList[s].couponCode.discount))
-        //   } else {
-        //     docs[i].totalProfit -= docs[i].orderList[s].totalPrice
-        //   }
-
-        // }
-        // totalPrice = docs[i].totalPrice
-        if (docs[i].orderList[s].status == 1) {
-          // var discount = 1;
-          // if (docs[i].orderList[s].couponCode.discount) {
-          //   discount = 1 - docs[i].orderList[s].couponCode.discount
-          // }
-          // totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
-
-          if (docs[i].orderList[s].orderDate.toISOString().slice(0, 10) == d.toISOString().slice(0, 10)) {
-            totalYesterday += docs[i].orderList[s].totalHasDiscount
-          }
-          if (docs[i].orderList[s].orderDate.toISOString().slice(0, 10) == today.toISOString().slice(0, 10)) {
-            totalToday += docs[i].orderList[s].totalHasDiscount
-          }
-        }
-
-      }
-      arrProfit.push(docs[i].totalProfit)
-      //totalProfit += docs[i].totalProfit
-      totalProfit += docs[i].totalProfit
-
+      totalProfit += docs[i].totalProfit // sum total profit of each product.
     }
-    var dailySales = 0
-
-    if (totalYesterday == 0 && totalToday != 0) {
-      dailySales = 100
-      obj_DailySales.dailySales = dailySales;
-      obj_DailySales.icon = 'fa fa-long-arrow-up',
-        obj_DailySales.color = 'text-success'
-    } else if (totalYesterday == 0 && totalToday == 0) {
-      obj_DailySales.dailySales = dailySales;
-      obj_DailySales.icon = 'fa fa-long-arrow-down',
-        obj_DailySales.color = 'text-danger'
-    } else {
-      dailySales = (((totalToday - totalYesterday) / totalYesterday) * 100).toFixed(1);
-      if (dailySales <= 0) {
-        obj_DailySales.dailySales = dailySales;
-        obj_DailySales.icon = 'fa fa-long-arrow-down',
-          obj_DailySales.color = 'text-danger'
-      } else {
-        obj_DailySales.dailySales = dailySales;
-        obj_DailySales.icon = 'fa fa-long-arrow-up',
-          obj_DailySales.color = 'text-success'
-      }
-    }
-
-    docs.forEach(s => {
-      var obj = {}
-      obj.name = s.title;
-      obj.percent = ((s.totalProfit / totalProfit) * 100).toFixed(1)
-      arrPercent.push(obj)
-    })
+    // view compare profit of today with yesterday
+    var dailySales = await glosbe_Daily.glosbeDaily()
     totalItemProfit = totalProfit;
     totalAllOrder = totalOrder
-    res.locals.arrPercent = JSON.stringify(arrPercent)
-    res.locals.arrTitle = JSON.stringify(arrTitle)
-    res.locals.arrProfit = JSON.stringify(arrProfit)
+
+    // view line, pie, bar chart
+    var lineChart = await chart.lineChart()
+    res.locals.lineChart = await JSON.stringify(lineChart)
+    var barChart = await chart.barChart()
+    res.locals.arrProfit = await JSON.stringify(barChart)
+    var pieChart = await chart.pieChart(totalProfit)
+    res.locals.arrPercent = await JSON.stringify(pieChart)
+    // filter top 5 product by profit
+    Product.find().sort({
+      totalProfit: -1
+    }).limit(5).exec(async (err, rs) => {
+      var i = 1;
+      await rs.forEach(s=>{
+        s.number = i
+        i++ 
+      })
+      res.locals.top5_Profit = await rs
+    })
+
+
+
+    // var auto_updateStatus_Order = await auto_updateStatusOrder(2)
+    var message = await glosbe_Daily.message_notification()
+    req.session.messsages = message
     res.render('pages/index', {
-      dashboard: 'dashboard',
+      dashboard: 'dashboard', // 
       totalProfit: totalProfit.toFixed(1),
       totalOrder: totalOrder,
-      dailySales: obj_DailySales,
-      sessionUser: req.session.user._id
+      dailySales: dailySales,
+      // sessionUser: req.session.user._id
+      sessionUser: req.session.user,
+      notification: message
     })
   })
 })
 
-router.get('/lineChart', (req, res) => {
-  var title_LineChart = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-  var month = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
 
-  Product.find(async (err, docs) => {
-    var ProfitbyMonth = []
-    month.forEach(s => {
-      var totalMonth = 0;
-      docs.forEach(x => {
-        var obj = {}
-
-        if (x.orderList.length > 0) {
-
-          x.orderList.forEach(a => {
-
-            // console.log(a.orderDate.toISOString().slice(5, 7))
-            if (a.orderDate.toISOString().slice(5, 7) == s && a.status == 1) {
-              if (a.couponCode.discount) {
-                totalMonth += (a.totalPrice - (a.totalPrice * a.couponCode.discount))
-              } else {
-                totalMonth += a.totalPrice
-              }
-
-
-            }
-
-          })
-
-
-
-        }
-        obj.profit = totalMonth
-      })
-
-      // console.log(obj)
-      ProfitbyMonth.push(obj)
-      obj.month = s
-    })
-    console.log(ProfitbyMonth)
+router.post('/filter_date', async (req, res) => {
+  var start_date = await req.body.start.trim() // check value empty for input
+  var end_date = await req.body.end.trim() // check value empty for input
+  if (!start_date && !end_date) {
     res.redirect('/')
-  })
-
-})
-
-
-
-router.post('/', async (req, res) => {
-  var start = req.body.start.trim();
-  var end = req.body.end.trim();
-  var arrPercent = []
-  Product.find(async (err, doc) => {
-    var arrTitle = []
-    var arrProfit = []
-    for (var i = 0; i < doc.length; i++) {
-      arrTitle.push(doc[i].title)
-      var totalPrice = 0;
-      for (var s = 0; s < doc[i].orderList.length; s++) {
-
-        var dates = doc[i].orderList[s].orderDate.toISOString().slice(0, 10)
-        if (dates >= start && dates <= end && doc[i].orderList[s].status == 1) {
-          // var discount = 1;
-          // if (doc[i].orderList[s].couponCode.discount) {
-          //   discount = 1 - doc[i].orderList[s].couponCode.discount
-          // }
-          // totalPrice += (doc[i].orderList[s].totalQuantity * doc[i].price) * discount
-          totalPrice += doc[i].orderList[s].totalHasDiscount
-        } else if (!start && !end && doc[i].orderList[s].status == 1) {
-          // totalPrice += doc[i].orderList[s].totalQuantity * doc[i].price
-          totalPrice += doc[i].orderList[s].totalHasDiscount
-        } else if (dates >= start && !end && doc[i].orderList[s].status == 1) {
-          var discount = 1;
-          if (doc[i].orderList[s].couponCode.discount) {
-            discount = 1 - doc[i].orderList[s].couponCode.discount
-          }
-          totalPrice += (doc[i].orderList[s].totalQuantity * doc[i].price) * discount
-        } else if (!start && dates <= end && doc[i].orderList[s].status == 1) {
-          // var discount = 1;
-          // if (doc[i].orderList[s].couponCode.discount) {
-          //   discount = 1 - doc[i].orderList[s].couponCode.discount
-          // }
-          // totalPrice += (doc[i].orderList[s].totalQuantity * doc[i].price) * discount
-          totalPrice += doc[i].orderList[s].totalHasDiscount
-        }
-      }
-      arrProfit.push(totalPrice)
-    }
-    doc.forEach(s => {
-      var obj = {}
-      obj.name = s.title;
-      obj.percent = ((s.totalProfit / totalItemProfit) * 100).toFixed(1)
-      arrPercent.push(obj)
-    })
-
-    res.locals.arrPercent = JSON.stringify(arrPercent)
-    res.locals.arrTitle = JSON.stringify(arrTitle)
-    res.locals.arrProfit = JSON.stringify(arrProfit)
-    await res.render('pages/index', {
+  } else {
+    var pieChart = await chart.pieChart(totalItemProfit) // piechart
+    var lineChart = await chart.lineChart() // linechart
+    var barChart_filterDate = await filter_Func.filter_rangeDate(start_date, end_date) // func filter by range date for barchart
+    res.locals.arrPercent = await JSON.stringify(pieChart) // binding data to pie chart
+    res.locals.arrProfit = await JSON.stringify(barChart_filterDate) // binding data to bar chart
+    res.locals.lineChart = await JSON.stringify(lineChart) // binding data to line chart
+    var message = await glosbe_Daily.message_notification() // view message for header
+    var dailySales = await glosbe_Daily.glosbeDaily() // view compare profit of today with yesterday
+    res.render('pages/index', {
       dashboard: 'dashboard',
-      totalProfit: totalItemProfit.toFixed(1),
-      totalOrder: totalAllOrder,
-      dailySales: obj_DailySales,
+      totalProfit: totalItemProfit.toFixed(1), // view total value of product
+      totalOrder: totalAllOrder, // view total order number
+      dailySales: obj_DailySales, // view percent value today with yesterday
+      sessionUser: req.session.user,
+      notification: message,
+      dailySales: dailySales
     })
-  })
+  }
 })
+
+// router.post('/', async (req, res) => {
+//   var start = req.body.start.trim();
+//   var end = req.body.end.trim();
+//   var arrPercent = []
+//   Product.find(async (err, doc) => {
+//     var arrTitle = []
+//     var arrProfit = []
+//     for (var i = 0; i < doc.length; i++) {
+//       arrTitle.push(doc[i].title)
+//       var totalPrice = 0;
+//       for (var s = 0; s < doc[i].orderList.length; s++) {
+
+//         var dates = doc[i].orderList[s].orderDate.toISOString().slice(0, 10)
+//         if (dates >= start && dates <= end && doc[i].orderList[s].status == 1) {
+//           // var discount = 1;
+//           // if (doc[i].orderList[s].couponCode.discount) {
+//           //   discount = 1 - doc[i].orderList[s].couponCode.discount
+//           // }
+//           // totalPrice += (doc[i].orderList[s].totalQuantity * doc[i].price) * discount
+//           totalPrice += doc[i].orderList[s].totalHasDiscount
+//         } else if (!start && !end && doc[i].orderList[s].status == 1) {
+//           // totalPrice += doc[i].orderList[s].totalQuantity * doc[i].price
+//           totalPrice += doc[i].orderList[s].totalHasDiscount
+//         } else if (dates >= start && !end && doc[i].orderList[s].status == 1) {
+//           var discount = 1;
+//           if (doc[i].orderList[s].couponCode.discount) {
+//             discount = 1 - doc[i].orderList[s].couponCode.discount
+//           }
+//           totalPrice += (doc[i].orderList[s].totalQuantity * doc[i].price) * discount
+//         } else if (!start && dates <= end && doc[i].orderList[s].status == 1) {
+//           // var discount = 1;
+//           // if (doc[i].orderList[s].couponCode.discount) {
+//           //   discount = 1 - doc[i].orderList[s].couponCode.discount
+//           // }
+//           // totalPrice += (doc[i].orderList[s].totalQuantity * doc[i].price) * discount
+//           totalPrice += doc[i].orderList[s].totalHasDiscount
+//         }
+//       }
+//       arrProfit.push(totalPrice)
+//     }
+//     // set data for pie chart
+//     doc.forEach(s => {
+//       var obj = {}
+//       obj.name = s.title;
+//       obj.percent = ((s.totalProfit / totalItemProfit) * 100).toFixed(1)
+//       arrPercent.push(obj)
+//     })
+
+//     res.locals.arrPercent = JSON.stringify(arrPercent)
+//     res.locals.arrTitle = JSON.stringify(arrTitle)
+//     res.locals.arrProfit = JSON.stringify(arrProfit)
+//     await res.render('pages/index', {
+//       dashboard: 'dashboard',
+//       totalProfit: totalItemProfit.toFixed(1),
+//       totalOrder: totalAllOrder,
+//       dailySales: obj_DailySales,
+//     })
+//   })
+// })
 
 router.post('/filterOption', (req, res) => {
   totalItemProfit
@@ -272,24 +215,6 @@ router.post('/filterOption', (req, res) => {
     totalOrder: totalAllOrder
   })
 })
-
-
-
-
-router.get('/downloadCSV', (req, res) => {
-  var ws = fs.createWriteStream('my.csv');
-  csv.write([
-    ["a1", "b1"],
-    ["a2", "b2"],
-    ["a3", "b3"]
-  ], {
-    headers: true
-  }).pipe(ws)
-  res.render('pages/index', {
-    dashboard: 'dashboard'
-  })
-})
-
 
 
 module.exports = router;

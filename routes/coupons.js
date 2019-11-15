@@ -58,7 +58,6 @@ router.post('/read_csv', upload.single('file'), (req, res) => {
                 <li>Conpon Code:${coupons._id}</li>
             </ul>
             `;
-            console.log(content)
             sendMail(content, 'Customer Gratitude', obj.email)
         }
     })
@@ -78,14 +77,18 @@ router.get('/couponList', isLoggedIn, async (req, res) => {
         }
         res.render('coupon/couponList', {
             coupons: docs,
-            coupon: 'coupon'
+            coupon: 'coupon',
+            sessionUser: req.session.user,
+            notification: req.session.messsages
         })
     })
 })
 router.get('/couponDetail/:id', (req, res) => {
     if (req.params.id == 'new') {
         res.render('coupon/couponUpload', {
-            coupon: 'coupon'
+            coupon: 'coupon',
+            sessionUser: req.session.user,
+            notification: req.session.messsages
         })
     } else {
         Coupons.findById(req.params.id, (err, doc) => {
@@ -93,6 +96,8 @@ router.get('/couponDetail/:id', (req, res) => {
             res.render('coupon/couponUpload', {
                 coupons: doc,
                 coupon: 'coupon',
+                sessionUser: req.session.user,
+                notification: req.session.messsages
             })
         })
     }

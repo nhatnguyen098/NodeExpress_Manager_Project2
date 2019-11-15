@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Product = require('../models/product')
 var url = require('url');
-
+var filter = require('../config/filter_Func')
 
 router.get('/orderList', isLoggedIn, async (req, res) => {
     Product.find((err, docs) => {
@@ -32,12 +32,47 @@ router.get('/orderList', isLoggedIn, async (req, res) => {
         })
         res.render('orders/orderList', {
             orders: 'order',
-            orderList: arr
+            orderList: arr,
+            sessionUser: req.session.user,
+            notification: req.session.messsages
         })
     })
 })
+router.get('/filter_status/:id', async (req, res) => {
+    if (req.params.id == 0) {
+        var filter_status = await filter.filter_status(Number(req.params.id))
+        res.render('orders/orderList', {
+            orders: 'order',
+            orderList: filter_status,
+            sessionUser: req.session.user,
+            notification: req.session.messsages
+        })
+    } else {
+        var filter_status = await filter.filter_oneDate(req.params.id)
+        res.render('orders/orderList', {
+            orders: 'order',
+            orderList: filter_status,
+            sessionUser: req.session.user,
+            notification: req.session.messsages
+        })
+    }
+})
 
-router.get('/orderDetail/:numberOrder', (req, res) => {
+router.post('/filter_status', async (req, res) => {
+    if (Number(req.body.status) == 2) {
+        res.redirect('./orderList')
+    } else {
+        var filter_status = await filter.filter_status(Number(req.body.status))
+        res.render('orders/orderList', {
+            orders: 'order',
+            orderList: filter_status,
+            sessionUser: req.session.user,
+            notification: req.session.messsages
+        })
+    }
+})
+
+router.get('/orderDetail/:numberOrder', async (req, res) => {
     var numOrder = req.params.numberOrder
     var arr = numOrder.split('-')
     Product.findById(arr[0], (err, doc) => {
@@ -59,7 +94,9 @@ router.get('/orderDetail/:numberOrder', (req, res) => {
                 }
                 res.render('orders/orderDetail', {
                     orders: 'order',
-                    orderDetail: s
+                    orderDetail: s,
+                    sessionUser: req.session.user,
+                    notification: req.session.messsages
                 })
             }
         })
@@ -67,14 +104,11 @@ router.get('/orderDetail/:numberOrder', (req, res) => {
 })
 
 router.post('/updateStatus_Order', async (req, res) => {
-    // console.log(req.body.proId)
-    // console.log(req.body.numOrder)
-    // console.log(req.body.status)
     var lastStatus = 0
-    var pro = Product.findById(req.body.proId, async (err,doc)=>{
-        if(doc.orderList.length >0 ){
-            doc.orderList.forEach(s=>{
-                if(s.numberOrder == req.body.numOrder){
+    var pro = Product.findById(req.body.proId, async (err, doc) => {
+        if (doc.orderList.length > 0) {
+            doc.orderList.forEach(s => {
+                if (s.numberOrder == req.body.numOrder) {
                     lastStatus = s.status
                 }
             })
@@ -103,7 +137,6 @@ router.post('/updateStatus_Order', async (req, res) => {
                     if (totalPro_Profit != 0) {
                         totalPro_Profit -= s.totalHasDiscount
                     }
-    
                 }
             })
             var pro = await Product.findOneAndUpdate({
@@ -122,10 +155,10 @@ router.post('/updateStatus_Order', async (req, res) => {
             res.redirect('orderList')
         })
     })
-    
+
 
     console.log(lastStatus)
-    
+
 
 })
 

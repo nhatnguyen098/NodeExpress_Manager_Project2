@@ -3,7 +3,7 @@ var router = express.Router();
 var Product = require('../models/product')
 const multer = require('multer');
 const multipart = require('connect-multiparty')
-
+var filter = require('../config/filter_Func')
 // const upload = multer({ dest:'public/images' });
 /* GET home page. */
 
@@ -42,7 +42,7 @@ router.get('/exportData', (req, res) => {
       var quantity = 0;
       var totalPrice = 0;
       for (var s = 0; s < docs[i].orderList.length; s++) {
-        if(docs[i].orderList[s].status == 1){
+        if (docs[i].orderList[s].status == 1) {
           quantity += docs[i].orderList[s].totalQuantity
           var discount = 1;
           if (docs[i].orderList[s].couponCode.discount) {
@@ -70,43 +70,23 @@ router.get('/exportData', (req, res) => {
 
 })
 
-router.post('/filter_Month', (req, res) => {
+router.post('/filter_Month', async (req, res) => {
   if (req.body.searchMonth == 0) {
     res.redirect('./productList')
   } else {
+    var filter_month = await filter.filter_month(req.body.searchMonth)
+    var sumQuantity = 0
+    var sumProfit = 0
+    var sumOrder = 0
+    filter_month.forEach(s => {
+      sumQuantity += s.qty
+      sumProfit += s.price
+      sumOrder += s.order
+    })
     Product.find((err, docs) => {
-      var sumProfit = 0;
-      var sumQuantity = 0;
-      var sumOrder = 0;
       for (var i = 0; i < docs.length; i++) {
         docs[i].number = (i + 1)
-        var quantity = 0;
-        var totalPrice = 0;
-        var orders = 0;
-        if (docs[i].orderList.length != 0) {
-          for (var s = 0; s < docs[i].orderList.length; s++) {
-            var date = docs[i].orderList[s].orderDate.toISOString().slice(5, 7)
-            if (date == req.body.searchMonth && docs[i].orderList[s].status == 1) {
-              quantity += docs[i].orderList[s].totalQuantity
-              var discount = 1;
-              if (docs[i].orderList[s].couponCode.discount) {
-                discount = 1 - docs[i].orderList[s].couponCode.discount
-              }
-              totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
-              sumOrder++
-              orders++
-            }
-          }
-          var obj = {
-            "qty": quantity,
-            "price": totalPrice.toFixed(1),
-            "order": orders
-          }
-
-          sumProfit += totalPrice
-          sumQuantity += quantity
-          docs[i].orderInfo = obj
-        }
+        docs[i].orderInfo = filter_month[i]
       }
       res.render('product/productList', {
         products: docs,
@@ -114,6 +94,8 @@ router.post('/filter_Month', (req, res) => {
         sumProfit: sumProfit.toFixed(1),
         sumQuantity: sumQuantity,
         sumOrder: sumOrder,
+        sessionUser: req.session.user,
+        notification: req.session.messsages
       })
     })
   }
@@ -154,6 +136,8 @@ router.get('/productList', isLoggedIn, function (req, res, next) {
       sumProfit: sumProfit.toFixed(1),
       sumQuantity: sumQuantity,
       sumOrder: sumOrder,
+      sessionUser: req.session.user,
+      notification: req.session.messsages
     });
   })
 });
@@ -175,11 +159,11 @@ router.get('/productDetail/:id', (req, res) => {
           arrOrder.push(docs.orderList[i])
           sumPrice += docs.orderList[i].totalPrice
           sumQty += docs.orderList[i].totalQuantity
-          
+
         } else if (docs.orderList[i].status == -1) {
           docs.orderList[i].status = 'Cancel'
           arrOrder.push(docs.orderList[i])
-        }else if(docs.orderList[i].status == 0){
+        } else if (docs.orderList[i].status == 0) {
           docs.orderList[i].status = 'Pending'
           arrOrder.push(docs.orderList[i])
         }
@@ -190,7 +174,9 @@ router.get('/productDetail/:id', (req, res) => {
       orderDetail: arrOrder,
       totalOrderPrice: sumPrice,
       totalOrderQty: sumQty,
-      product: 'product'
+      product: 'product',
+      sessionUser: req.session.user,
+      notification: req.session.messsages
     })
   })
 })
@@ -200,7 +186,9 @@ router.get('/product-upload/:id', (req, res) => {
     res.render('product/productUpload', {
       keyUpdate: req.params.id,
       product: 'product',
-      pro: doc
+      pro: doc,
+      sessionUser: req.session.user,
+      notification: req.session.messsages
     })
   })
 
@@ -208,7 +196,7 @@ router.get('/product-upload/:id', (req, res) => {
 router.post('/product-upload/:id', upload.single('imagePath'), (req, res) => {
   // console.log(req.body)
   // console.log(req.file.path)
-  // console.log(req.file.originalname)
+  // console.log(req.body.imagePath)
   var key = req.params.id
   if (key == "new") {
     var pro = new Product({
@@ -245,7 +233,9 @@ router.post('/product-upload/:id', upload.single('imagePath'), (req, res) => {
 
 router.get('/product-update', (req, res) => {
   res.render('product/productUpdate', {
-    product: 'product'
+    product: 'product',
+    sessionUser: req.session.user,
+    notification: req.session.messsages
   })
 })
 

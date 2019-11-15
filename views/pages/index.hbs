@@ -1,7 +1,6 @@
 <div class="content">
   <div class="container-fluid">
     <div class="row">
-
       <div class="col-md-4">
         <div class="card card-chart">
           <div class="card-header card-header-primary">
@@ -64,11 +63,12 @@
           <div class="row">
             <div class="col-9">
               <div class="card-header card-header-white">
-                <canvas id="proProfit" height="200"></canvas>
+                <canvas id="proProfit" height="220"></canvas>
               </div>
               <div class="card-body">
                 <h4 class="card-title">Chart for profit of each product</h4>
                 <p class="card-category">Summary of profits have been obtained</p>
+                <button type="button" id="saveImg1" class="btn btn-primary">Save image</button>
               </div>
             </div>
             <div class="col-md-3">
@@ -81,7 +81,7 @@
                           <h4>Range date</h4>
                         </p>
                       </div>
-                      <form action="/" method="post">
+                      <form action="/filter_date" method="post">
                         <div class="form-group">
                           <input type="date" class="form-control" name="start" id="start" placeholder="The start day">
                         </div>
@@ -98,39 +98,6 @@
                     </div>
                   </div>
                 </div>
-                {{!-- <div class="col-md-12">
-                  <div class="card card-stats">
-                    <div class="card-header card-header-primary card-header-icon">
-                      <div class="card-icon">
-                        <p class="card-category text-white">
-                          <h4>Filter Option</h4>
-                        </p>
-                      </div>
-                      <form action="/filterOption" method="post">
-                        <div class="form-group">
-                          <input type="text" class="form-control" id="proName" name="proName"
-                            placeholder="Input Product Name">
-                        </div>
-                        <div class="form-group">
-                          <select class="form-control" name="category" id="category">
-                            <option value="0" selected>Choose category</option>
-                            <option value="men">For Men</option>
-                            <option value="women">For Women</option>
-                            <option value="shoes">Shoes</option>
-                            <option value="bag">Bag</option>
-                            <option value="watches">Watches</option>
-                          </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">submit</button>
-                      </form>
-                    </div>
-                    <div class="card-footer">
-                      <div class="stats">
-                        <i class="material-icons">date_range</i> All time
-                      </div>
-                    </div>
-                  </div>
-                </div> --}}
               </div>
             </div>
           </div>
@@ -153,6 +120,7 @@
           <div class="card-body">
             <h4 class="card-title">Profit percent of products</h4>
             <p class="card-category">Summary of profits percent have been obtaine</p>
+            <button type="button" id="saveImg2" class="btn btn-primary">Save image</button>
           </div>
           <div class="card-footer">
             <div class="stats">
@@ -167,7 +135,7 @@
             <canvas id="lineChart" height="300"></canvas>
           </div>
           <div class="card-body">
-            <h4 class="card-title">Profit percent of products</h4>
+            <h4 class="card-title">Profit of each month</h4>
             <p class="card-category">Summary of profits percent have been obtained</p>
             <button type="button" id="saveImg" class="btn btn-primary">Save image</button>
           </div>
@@ -180,10 +148,59 @@
       </div>
     </div>
   </div>
+
+  <div class="col-lg-12 col-md-12">
+    <div class="card">
+      <div class="card-header card-header-primary">
+        <h4 class="card-title">Product Rank</h4>
+        <p class="card-category">Total values of product and Rating star rank</p>
+      </div>
+      <div class="card-body table-responsive">
+        <table class="table table-hover">
+          <thead class="text-primary">
+            <th>No.</th>
+            <th>Product's Name</th>
+            <th>Total Profit</th>
+            <th>Rating Star</th>
+          </thead>
+          <tbody>
+            {{#each top5_Profit}}
+            <tr>
+              <td>{{this.number}}</td>
+              <td>{{this.title}}</td>
+              <td>${{this.totalProfit}}</td>
+              <td>{{this.productRate}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 
 
+
+
+<script>
+  window.onload = () => {
+
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 4000
+    })
+
+    Toast.fire({
+      icon: 'success',
+      title: `Hello {{{sessionUser.fullName}}}`,
+    })
+  }
+
+
+</script>
 
 <script type='text/javascript'>
   // drawChart
@@ -197,12 +214,13 @@
           label: titleChart,
           data: datas,
           backgroundColor: 'rgba(75, 192, 192, 0.5)',
-          borderColor: '(75, 192, 192, 5)',
+          borderColor: '(75, 192, 192, 2)',
           fillColor: 'rgba(75, 192, 192, 0.2)',
           strokeColor: 'rgba(75, 192, 192, 0.2)',
           highlightFill: 'rgba(75, 192, 192, 0.2)',
           highlighStroke: 'rgba(75, 192, 192, 0.2)',
           borderWidth: 2,
+          lineTension: 0.5,
           fill: displays
         }]
       },
@@ -233,7 +251,7 @@
 
             },
             scaleLabel: {
-              display: displays,
+              display: true,
               labelString: 'Product Name'
             }
           }]
@@ -244,41 +262,49 @@
       downloadImage(chartjs)
     }
   }
-
+  function lineChart(optionChart, label, datas, tagMaster) {
+    var ctx = document.getElementById(tagMaster).getContext('2d');
+    var chartjs = new Chart(ctx, {
+      type: optionChart,
+      data: {
+        labels: label,
+        datasets: [{
+          label: 'my data',
+          data: datas,
+          borderColor: '(75, 192, 192, 5)',
+          borderWidth: 2,
+          lineTension: 0.1,
+          fill: false
+        }]
+      },
+    });
+  }
 </script>
 
 <script type='text/javascript'>
 
-  // random color
-  let dynamicColors = function () {
-    var r = Math.floor(Math.random() * 255);
-    var g = Math.floor(Math.random() * 255);
-    var b = Math.floor(Math.random() * 255);
-    return "rgba(" + r + "," + g + "," + b + "," + "0.3)";
-  }
-
-  // bar chart
-  var arrTitles = {{{ arrTitle }}}
+  // setup data for bar chart
   var arrProfits = {{{ arrProfit }}}
-  var arrPercent = {{{ arrPercent }}}
-  DrawChart(arrTitles, arrProfits, 'bar', 'Profit of each products', 'proProfit', true)
+  var arrTitles_barChart = []
+  var barChart_value = []
+  arrProfits.forEach(s => { arrTitles_barChart.push(s.title); barChart_value.push(s.values) })
+  DrawChart(arrTitles_barChart, barChart_value, 'bar', 'Profit of products', 'proProfit', true)
 
-  // set up data for chart
+  // set up data for pie chart
   var title = [];
   var percent = [];
+  var arrPercent = {{{ arrPercent }}}
   arrPercent.forEach(s => { title.push(s.name); percent.push(s.percent) })
-  // pie chart
   DrawChart(title, percent, 'pie', 'Profit percent of products', 'percentChart', false)
+
+
   // line chart
-  
-  DrawChart(title, percent, 'line', 'Profit of each products', 'lineChart', true)
-
-
-
-
-
-
-
+  var lineChart = {{{ lineChart }}}
+  var monthly = []
+  var values = []
+  lineChart.forEach(s => { monthly.push(s.month); values.push(s.profit) })
+  DrawChart(monthly, values, 'line', 'Profit of monthly', 'lineChart', true)
+  //lineChart('line', monthly, values, 'lineChart')
 
 
   function downloadImage(chartjs) {
