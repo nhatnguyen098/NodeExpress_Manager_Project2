@@ -98,6 +98,38 @@
                     </div>
                   </div>
                 </div>
+                <div class="col-md-12">
+                  <div class="card card-stats">
+                    <div class="card-header card-header-primary card-header-icon">
+                      <div class="card-icon">
+                        <p class="card-category text-white">
+                          <h4>Option Chart</h4>
+                        </p>
+                      </div>
+
+                      <div class="form-group">
+                        <select class="form-control" name="option_chart" id="option_chart">
+                          <option value="bar">Bar chart</option>
+                          <option value="line">Line Chart</option>
+                          <option value="pie">Pie Chart</option>
+                          <option value="radar">Radar Chart</option>
+                          <option value="polarArea">polar Area Chart</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+
+                      </div>
+                      <button type="submit" id="change_chart" name="change_chart"
+                        class="btn btn-primary">submit</button>
+
+                    </div>
+                    <div class="card-footer">
+                      <div class="stats">
+                        <i class="material-icons">date_range</i> All time
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -148,35 +180,72 @@
       </div>
     </div>
   </div>
-
-  <div class="col-lg-12 col-md-12">
-    <div class="card">
-      <div class="card-header card-header-primary">
-        <h4 class="card-title">Product Rank</h4>
-        <p class="card-category">Total values of product and Rating star rank</p>
+  <div class="row">
+    <div class="col-lg-6 col-md-6">
+      <div class="card">
+        <div class="card-header card-header-primary">
+          <h4 class="card-title">Top 5 products profit</h4>
+          <p class="card-category">Total values of product</p>
+        </div>
+        <div class="card-body table-responsive">
+          <table class="table table-hover">
+            <thead class="text-primary">
+              <th>No.</th>
+              <th>Product's Name</th>
+              <th>Total Profit</th>
+            </thead>
+            <tbody>
+              {{#each top5_Profit}}
+              <tr>
+                <td>{{this.number}}</td>
+                <td>{{this.title}}</td>
+                <td>${{this.totalProfit}}</td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer">
+          <div class="stats">
+            <i class="material-icons">date_range</i> All time
+          </div>
+        </div>
       </div>
-      <div class="card-body table-responsive">
-        <table class="table table-hover">
-          <thead class="text-primary">
-            <th>No.</th>
-            <th>Product's Name</th>
-            <th>Total Profit</th>
-            <th>Rating Star</th>
-          </thead>
-          <tbody>
-            {{#each top5_Profit}}
-            <tr>
-              <td>{{this.number}}</td>
-              <td>{{this.title}}</td>
-              <td>${{this.totalProfit}}</td>
-              <td>{{this.productRate}}</td>
-            </tr>
-            {{/each}}
-          </tbody>
-        </table>
+    </div>
+    <div class="col-lg-6 col-md-6">
+      <div class="card">
+        <div class="card-header card-header-primary">
+          <h4 class="card-title">Top 5 rating star products</h4>
+          <p class="card-category">Total rating star rank</p>
+        </div>
+        <div class="card-body table-responsive">
+          <table class="table table-hover">
+            <thead class="text-primary">
+              <th>No.</th>
+              <th>Product's Name</th>
+              <th>Rating Star</th>
+            </thead>
+            <tbody>
+              {{#each top5_rating}}
+              <tr>
+                <td>{{this.number}}</td>
+                <td>{{this.title}}</td>
+                <td>{{this.productRate}}</td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer">
+          <div class="stats">
+            <i class="material-icons">date_range</i> All time
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
+
 </div>
 
 
@@ -258,28 +327,81 @@
         }
       }
     });
-    saveImg.onclick = () => {
-      downloadImage(chartjs)
-    }
+
+
   }
-  function lineChart(optionChart, label, datas, tagMaster) {
-    var ctx = document.getElementById(tagMaster).getContext('2d');
-    var chartjs = new Chart(ctx, {
+
+</script>
+
+<script type='text/javascript'>
+  var arrProfits = {{{ arrProfit }}}
+  var arrTitles_barChart = []
+  var barChart_value = []
+  arrProfits.forEach(s => { arrTitles_barChart.push(s.title); barChart_value.push(s.values) })
+  function Draw_optionChart(label, datas, optionChart, titleChart, tagMaster) {
+    var ctx_chart = document.getElementById(tagMaster).getContext('2d');
+    var chart_option = new Chart(ctx_chart, {
       type: optionChart,
       data: {
         labels: label,
         datasets: [{
-          label: 'my data',
+          label: titleChart,
           data: datas,
-          borderColor: '(75, 192, 192, 5)',
+          backgroundColor: 'rgba(75, 192, 192, 0.5)',
+          borderColor: '(75, 192, 192, 2)',
+          fillColor: 'rgba(75, 192, 192, 0.2)',
+          strokeColor: 'rgba(75, 192, 192, 0.2)',
+          highlightFill: 'rgba(75, 192, 192, 0.2)',
+          highlighStroke: 'rgba(75, 192, 192, 0.2)',
           borderWidth: 2,
-          lineTension: 0.1,
-          fill: false
+          lineTension: 0.5,
+          fill: true
         }]
       },
+      options: {
+        responsive: true,
+        title: {
+          text: titleChart,
+          fontSize: 25,
+          fontStyle: 'bold',
+          display: true
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              fontSize: 14,
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Value'
+            }
+          }],
+          xAxes: [{
+            ticks: {
+              beginAtZero: true,
+              fontSize: 14,
+              display: true,
+
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Product Name'
+            }
+          }]
+        }
+      }
     });
+    change_chart.onclick = async () => {
+      chart_option.destroy()
+      await Draw_optionChart(arrTitles_barChart, barChart_value, option_chart.value, 'Profit of products', 'proProfit')
+    }
+    saveImg1.onclick = () => {
+      downloadImage(chart_option)
+    }
   }
 </script>
+
 
 <script type='text/javascript'>
 
@@ -288,7 +410,8 @@
   var arrTitles_barChart = []
   var barChart_value = []
   arrProfits.forEach(s => { arrTitles_barChart.push(s.title); barChart_value.push(s.values) })
-  DrawChart(arrTitles_barChart, barChart_value, 'bar', 'Profit of products', 'proProfit', true)
+  //DrawChart(arrTitles_barChart, barChart_value, 'bar', 'Profit of products', 'proProfit', true)
+  Draw_optionChart(arrTitles_barChart, barChart_value, 'bar', 'Profit of products', 'proProfit')
 
   // set up data for pie chart
   var title = [];
@@ -331,5 +454,4 @@
     // or, use
     // tagMaster.update(0);
   }
-
 </script>

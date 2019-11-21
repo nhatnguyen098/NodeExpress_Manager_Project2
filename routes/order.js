@@ -6,6 +6,7 @@ var filter = require('../config/filter_Func')
 
 router.get('/orderList', isLoggedIn, async (req, res) => {
     Product.find((err, docs) => {
+        console.log(docs)
         var arr = [];
         var number = 0;
         docs.forEach(s => {

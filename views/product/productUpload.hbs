@@ -8,6 +8,11 @@
                         <p class="card-category">Product key: {{keyUpdate}}</p>
                     </div>
                     <div class="card-body">
+                        {{#if messages}}
+                        <div class="alert alert-warning">
+                            <strong>{{messages}}</strong>
+                        </div>
+                        {{/if}}
                         {{#if pro}}
                         <form action="/product/product-upload/{{keyUpdate}}" method="post"
                             enctype="multipart/form-data">
@@ -51,10 +56,10 @@
                                     </div>
                                     <div class="form-control custom-file">
                                         <input class="custom-file-input" id="imagePath" name="imagePath"
-                                            accept="image/png,image/jpeg,application/pdf" type="file" />
-                                        <label class="custom-file-label" for="customFile">{{pro.imagePath}}</label>
+                                            accept="image/png,image/jpeg" type="file" required />
+                                        <label class="custom-file-label" for="customFile"
+                                            value="{{pro.imagePath}}">Choose file</label>
                                     </div>
-
                                 </div>
                             </div>
                             <div class="row">
@@ -70,7 +75,8 @@
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary pull-right">Upload</button>
-                            <a name="" id="" class="btn btn-primary pull-right" href="/product/productDetail/{{keyUpdate}}" role="button">Back Detail</a>
+                            <a name="" id="" class="btn btn-primary pull-right"
+                                href="/product/productDetail/{{keyUpdate}}" role="button">Back Detail</a>
                             <div class="clearfix"></div>
                         </form>
                         {{else}}
@@ -113,7 +119,7 @@
                                     </div>
                                     <div class="form-control custom-file">
                                         <input class="custom-file-input" id="imagePath" name="imagePath"
-                                            accept="image/png,image/jpeg,application/pdf" type="file" required />
+                                            accept="image/png,image/jpeg" type="file" required />
                                         <label class="custom-file-label" for="customFile">Choose file</label>
                                         {{!-- <label class="custom-file-label" for="proImage">Choose file</label> --}}
                                     </div>
@@ -133,7 +139,8 @@
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary pull-right">Upload</button>
-                            <a name="" id="" class="btn btn-primary pull-right" href="/product/productList" role="button">Back to
+                            <a name="" id="" class="btn btn-primary pull-right" href="/product/productList/1"
+                                role="button">Back to
                                 List</a>
                             <div class="clearfix"></div>
                         </form>

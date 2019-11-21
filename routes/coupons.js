@@ -67,6 +67,7 @@ router.post('/read_csv', upload.single('file'), (req, res) => {
 
 router.get('/couponList', isLoggedIn, async (req, res) => {
     Coupons.find((err, docs) => {
+        console.log(docs)
         for (var i = 0; i < docs.length; i++) {
             docs[i].number = (i + 1)
             if (docs[i].active == true) {

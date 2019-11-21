@@ -8,9 +8,7 @@
               class="btn btn-primary pull-right" type="button">Create New</a></h4>
           <p class="card-category">Synthesize information of each product</p>
         </div>
-
         <div class="card-body">
-
           <form action="/product/filter_Month" method="post">
             <div class="row">
               <div class="form-group col-4">
@@ -93,8 +91,30 @@
                   <td></td>
                 </tr>
               </tbody>
+                <nav class="pull-right" style=" padding-right: 50px; display: inline-block;">
+                  <ul class="pagination">
+                    <li class="page-item">
+                      <a class="page-link" style="color:blueviolet" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previous</span>
+                      </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" style="color:blueviolet" href="/product/productList/1">1</a></li>
+                    <li class="page-item"><a class="page-link" style="color:blueviolet" href="/product/productList/2">2</a></li>
+                    <li class="page-item"><a class="page-link" style="color:blueviolet" href="/product/productList/3">3</a></li>
+                    <li class="page-item"><a class="page-link" style="color:blueviolet" href="/product/productList/4">4</a></li>
+                    <li class="page-item">
+                      <a class="page-link" style="color:blueviolet" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Next</span>
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
             </table>
-            <a class="btn btn-primary pull-right" href="/product/exportData" role="button">download</a>
+            <div>
+              <a class="btn btn-primary pull-right" href="/product/exportData" role="button">download</a>
+            </div>
           </div>
         </div>
       </div>

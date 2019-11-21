@@ -4,7 +4,8 @@ var Product = require('../models/product')
 const multer = require('multer');
 const multipart = require('connect-multiparty')
 var filter = require('../config/filter_Func')
-// const upload = multer({ dest:'public/images' });
+var check = require('../config/check_valid')
+
 /* GET home page. */
 
 // using upload image
@@ -23,25 +24,19 @@ var storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  // limits: {
-  //   fileSize: 1200 * 1486
-  // },
-  // fileFilter: fileFilter
-  // dest:'upload/',
-
 });
 
 
 
 router.get('/exportData', (req, res) => {
   Product.find((err, docs) => {
-    // var totalQty = 0;
-    // var SumPrice = 0;
+    var total_quantity = 0, total_order = 0, total_profit = 0;
     for (var i = 0; i < docs.length; i++) {
       docs[i].number = (i + 1)
       var quantity = 0;
       var totalPrice = 0;
       for (var s = 0; s < docs[i].orderList.length; s++) {
+        total_order += docs[i].orderList.length
         if (docs[i].orderList[s].status == 1) {
           quantity += docs[i].orderList[s].totalQuantity
           var discount = 1;
@@ -51,14 +46,21 @@ router.get('/exportData', (req, res) => {
           totalPrice += (docs[i].orderList[s].totalQuantity * docs[i].price) * discount
         }
       }
-      //totalQty += quantity
-      //SumPrice += totalPrice
+      total_quantity += quantity
+      total_profit +=  totalPrice
       var obj = {
         "qty": quantity,
         "price": totalPrice.toFixed(1)
       }
       docs[i].orderInfo = obj
     }
+    var objTotal = {
+      'title': 'Total',
+      'orderInfo':{'qty': total_quantity,'price': total_profit.toFixed(1)},
+      'orderList': []
+    }
+    objTotal.orderList.length = total_order
+    docs.push(objTotal)
     res.writeHead(200, {
       'Content-Type': 'text/csv',
       'Content-Disposition': 'attachment; filename=report.csv'
@@ -100,13 +102,19 @@ router.post('/filter_Month', async (req, res) => {
     })
   }
 })
-router.get('/productList', isLoggedIn, function (req, res, next) {
-  Product.find(async (err, docs) => {
+router.get('/productList/:page', isLoggedIn, async (req, res) => {
+  await Product.paginate({}, { // pagination
+    page: req.params.page,
+    limit: 10
+  }, async (err, rs) => { // to do view product list
+    var docs = rs.docs
     var sumProfit = 0;
     var sumQuantity = 0;
     var sumOrder = 0;
+    var numberOrder = (Number(req.params.page) - 1) * 10 + 1
     for (var i = 0; i < docs.length; i++) {
-      docs[i].number = (i + 1)
+      docs[i].number = numberOrder
+      numberOrder++
       var quantity = 0;
       var totalPrice = 0;
       var orders = 0;
@@ -139,8 +147,8 @@ router.get('/productList', isLoggedIn, function (req, res, next) {
       sessionUser: req.session.user,
       notification: req.session.messsages
     });
-  })
-});
+  });
+})
 
 router.get('/productDetail/:id', (req, res) => {
   var proId = req.params.id
@@ -193,42 +201,51 @@ router.get('/product-upload/:id', (req, res) => {
   })
 
 })
-router.post('/product-upload/:id', upload.single('imagePath'), (req, res) => {
-  // console.log(req.body)
-  // console.log(req.file.path)
-  // console.log(req.body.imagePath)
-  var key = req.params.id
-  if (key == "new") {
-    var pro = new Product({
-      imagePath: req.file.originalname, // req.body.imagePath
-      title: req.body.proname,
-      description: req.body.description,
-      userGroup: req.body.userGroup,
-      price: req.body.price,
-      reviews: [],
-      orderList: [],
-      productRate: 0,
-      totalProfit: 0
+router.post('/product-upload/:id', upload.single('imagePath'), async (req, res) => {
+  var checks = await check.check_valid(req.body.proname)
+  if (checks == false) {
+    await res.render('product/productUpload', {
+      keyUpdate: req.params.id,
+      messages: 'The fields have special characters.!',
+      product: 'product',
+      sessionUser: req.session.user,
+      notification: req.session.messsages
     })
-    pro.save();
   } else {
-    Product.findOneAndUpdate({
-      _id: key
-    }, {
-      '$set': {
-        'imagePath': req.file.originalname, // req.body.imagePath
-        'title': req.body.proname,
-        'description': req.body.description,
-        'userGroup': req.body.userGroup,
-        'price': req.body.price,
-      }
-    }, {
-      new: true,
-      upsert: true
-    }, (err, doc) => {})
-  }
+    var key = req.params.id
+    if (key == "new") {
+      var pro = new Product({
+        imagePath: req.file.originalname, // req.body.imagePath
+        title: req.body.proname.trim(),
+        description: req.body.description,
+        userGroup: req.body.userGroup,
+        price: req.body.price,
+        reviews: [],
+        orderList: [],
+        productRate: 0,
+        totalProfit: 0
+      })
+      pro.save();
+    } else {
+      Product.findOneAndUpdate({
+        _id: key
+      }, {
+        '$set': {
+          'imagePath': req.file.originalname, // req.body.imagePath
+          'title': req.body.proname,
+          'description': req.body.description,
+          'userGroup': req.body.userGroup,
+          'price': req.body.price,
+        }
+      }, {
+        new: true,
+        upsert: true
+      }, (err, doc) => {
 
-  res.redirect('../productList')
+      })
+    }
+    res.redirect('../productList/1')
+  }
 })
 
 router.get('/product-update', (req, res) => {
@@ -287,15 +304,15 @@ function dataToCSV(dataList, headers) {
 }
 
 async function paginate(pages, limitNum) {
-  var productChunks = [];
+  var productChunks = []
   await Product.paginate({}, {
     page: pages,
     limit: limitNum
-  }, function (err, result) {
-    var chuckSize = 4;
-    for (var i = 0; i < result.docs.length; i += chuckSize) {
-      productChunks.push(result.docs.slice(i, i + chuckSize))
-    }
+  }, async (err, rs) => {
+    rs.docs.forEach(s => {
+      productChunks.push(s)
+    })
+
   });
-  return await productChunks;
+  return await productChunks
 }

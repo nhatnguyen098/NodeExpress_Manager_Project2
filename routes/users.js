@@ -49,6 +49,7 @@ router.get('/userList', isLoggedIn, (req, res) => {
     for (var i = 0; i < docs.length; i++) {
       docs[i].number = (i + 1)
     }
+    console.log(docs)
     res.render('user/userList', {
       users: docs,
       person: 'person',
@@ -82,6 +83,7 @@ router.get('/signup/:id', isLoggedIn, function (req, res, next) {
             }
           })
         })
+        console.log(doc)
         res.render('user/signup', {
           users: doc,
           csrfToken: req.csrfToken(),
@@ -194,35 +196,6 @@ router.post('/signin', passport.authenticate('local.signin', {
     res.redirect('./user/userList')
   }
 })
-
-// router.post('/filterEmail', passport.authenticate('local.findEmail', {
-//   failureRedirect: './userList',
-//   failureFlash: true,
-// }), function (req, res) {
-//   if (req.session.oldUrl) {
-//     var oldUrl = req.session.oldUrl;
-//     req.session.oldUrl = null;
-//     // res.redirect(oldUrl);
-//     var messages = req.flash('error')
-//     res.render('user/userList', {
-//       users: req.session.email,
-//       person: 'person',
-//       csrfToken: req.csrfToken(),
-//       messages: messages,
-//       hasErrors: messages.length > 0,
-//     })
-//   } else {
-//     var messages = req.flash('error')
-//     res.render('user/userList', {
-//       users: req.session.email,
-//       person: 'person',
-//       csrfToken: req.csrfToken(),
-//       messages: messages,
-//       hasErrors: messages.length > 0,
-//     })
-//   }
-// })
-
 
 
 module.exports = router;

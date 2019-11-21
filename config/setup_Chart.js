@@ -35,7 +35,7 @@ module.exports = {
         })
         return await arr
     },
-    'barChart': async function(){
+    'barChart': async function () {
         var arr = []
         var pro = await Product.find(async (err, docs) => {
             await docs.forEach(s => {
@@ -48,4 +48,5 @@ module.exports = {
         })
         return await arr
     },
+    
 }
