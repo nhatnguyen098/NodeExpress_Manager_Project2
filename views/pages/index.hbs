@@ -414,19 +414,19 @@
       //await Draw_optionChart(arrTitles_barChart, barChart_value, option_chart.value, 'Profit of products', 'proProfit')
       switch (option_value.value) {
         case '1':
-          await Draw_optionChart(arrTitles_barChart, barChart_value, option_chart.value, 'Profit of products', 'proProfit')
+          await Draw_optionChart(arrTitles_barChart, barChart_value, option_chart.value, 'Total profit of products', 'proProfit')
           break;
         case '2':
-          await Draw_optionChart(arrTitles_barChart, rating, option_chart.value, 'Profit of products', 'proProfit')
+          await Draw_optionChart(arrTitles_barChart, rating, option_chart.value, 'Rating Star of products', 'proProfit')
           break;
         case '3':
-          await Draw_optionChart(arrTitles_barChart, orders, option_chart.value, 'Profit of products', 'proProfit')
+          await Draw_optionChart(arrTitles_barChart, orders, option_chart.value, 'Total orders number of products', 'proProfit')
           break;
         case '4':
-          await Draw_optionChart(arrTitles_barChart, quantity, option_chart.value, 'Profit of products', 'proProfit')
+          await Draw_optionChart(arrTitles_barChart, quantity, option_chart.value, 'Total quanities of products', 'proProfit')
           break;
         default:
-          await Draw_optionChart(arrTitles_barChart, barChart_value, option_chart.value, 'Profit of products', 'proProfit')
+          await Draw_optionChart(arrTitles_barChart, barChart_value, option_chart.value, 'Total profit of products', 'proProfit')
       }
     }
     saveImg1.onclick = () => {

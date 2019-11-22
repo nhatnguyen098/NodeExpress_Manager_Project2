@@ -303,16 +303,3 @@ function dataToCSV(dataList, headers) {
   return csvContent;
 }
 
-async function paginate(pages, limitNum) {
-  var productChunks = []
-  await Product.paginate({}, {
-    page: pages,
-    limit: limitNum
-  }, async (err, rs) => {
-    rs.docs.forEach(s => {
-      productChunks.push(s)
-    })
-
-  });
-  return await productChunks
-}

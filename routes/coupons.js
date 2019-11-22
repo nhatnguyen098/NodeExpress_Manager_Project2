@@ -70,7 +70,7 @@ router.post('/filter', async (req, res) => {
         'active': req.body.status
     }, (err, docs) => {
         if (req.body.status == 0) {
-            res.redirect('./couponList')
+            res.redirect('./couponList/1')
         } else {
             for (var i = 0; i < docs.length; i++) {
                 docs[i].number = (i + 1)
@@ -91,10 +91,16 @@ router.post('/filter', async (req, res) => {
     })
 })
 
-router.get('/couponList', isLoggedIn, async (req, res) => {
-    Coupons.find((err, docs) => {
+router.get('/couponList/:page', isLoggedIn, async (req, res) => {
+    await Coupons.paginate({}, { // pagination
+        page: req.params.page,
+        limit: 10
+    }, async (err, rs) => {
+        var docs = rs.docs
+        var numberOrder = (Number(req.params.page) - 1) * 10 + 1
         for (var i = 0; i < docs.length; i++) {
-            docs[i].number = (i + 1)
+            docs[i].number = numberOrder
+            numberOrder++
             if (docs[i].active == true) {
                 docs[i].status = 'Active'
             } else {

@@ -54,27 +54,25 @@ module.exports = {
         var obj = {
             'message': 0
         }
-        var pro = await Product.find({
-            'orderList.status': 0
-        }, async (err, doc) => {
-            if (doc) {
-                obj.message = obj.message + 1
-                obj.task_pending = doc.length
-                await doc.forEach(s => {
-                    arr.push(s)
-                })
-            }
-        })
         // notification for new order
         var today = new Date()
         var pro_new = await Product.find({
             'orderList.status': 0,
         }, async (err, rs) => {
+            /// notification total pending order
+            if (rs) {
+                obj.message = obj.message + 1
+                obj.task_pending = rs.length
+                await rs.forEach(s => {
+                    arr.push(s)
+                })
+            }
+            // notification new order today
             var check = false
             var count = 0
             await rs.forEach(s => {
                 s.orderList.forEach(x => {
-                    if (x.orderDate.toISOString().slice(0, 10) == today.toISOString().slice(0, 10)) {
+                    if (x.orderDate.toISOString().slice(0, 10) == today.toISOString().slice(0, 10) && x.status == 0) {
                         check = true
                         count++
                     }

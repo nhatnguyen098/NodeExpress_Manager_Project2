@@ -49,7 +49,6 @@ router.get('/userList', isLoggedIn, (req, res) => {
     for (var i = 0; i < docs.length; i++) {
       docs[i].number = (i + 1)
     }
-    console.log(docs)
     res.render('user/userList', {
       users: docs,
       person: 'person',
