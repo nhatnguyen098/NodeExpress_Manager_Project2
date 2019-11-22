@@ -65,9 +65,34 @@ router.post('/read_csv', upload.single('file'), (req, res) => {
     res.redirect('../coupon/couponList')
 })
 
+router.post('/filter', async (req, res) => {
+    Coupons.find({
+        'active': req.body.status
+    }, (err, docs) => {
+        if (req.body.status == 0) {
+            res.redirect('./couponList')
+        } else {
+            for (var i = 0; i < docs.length; i++) {
+                docs[i].number = (i + 1)
+                if (docs[i].active == true) {
+                    docs[i].status = 'Active'
+                } else {
+                    docs[i].status = 'inActive'
+                }
+            }
+            res.render('coupon/couponList', {
+                coupons: docs,
+                coupon: 'coupon',
+                sessionUser: req.session.user,
+                notification: req.session.messsages
+            })
+        }
+
+    })
+})
+
 router.get('/couponList', isLoggedIn, async (req, res) => {
     Coupons.find((err, docs) => {
-        console.log(docs)
         for (var i = 0; i < docs.length; i++) {
             docs[i].number = (i + 1)
             if (docs[i].active == true) {

@@ -109,6 +109,7 @@
 
                       <div class="form-group">
                         <select class="form-control" name="option_chart" id="option_chart">
+                          <option value="bar">Selection Chart</option>
                           <option value="bar">Bar chart</option>
                           <option value="line">Line Chart</option>
                           <option value="pie">Pie Chart</option>
@@ -117,7 +118,13 @@
                         </select>
                       </div>
                       <div class="form-group">
-
+                        <select class="form-control" name="option_value" id="option_value">
+                          <option value="0">Selection values</option>
+                          <option value="1">Total Profit</option>
+                          <option value="2">Total Rating</option>
+                          <option value="3">Total Orders</option>
+                          <option value="4">Total quantities</option>
+                        </select>
                       </div>
                       <button type="submit" id="change_chart" name="change_chart"
                         class="btn btn-primary">submit</button>
@@ -251,10 +258,11 @@
 
 
 
-
+{{!-- load message hello --}}
 <script>
-  window.onload = () => {
 
+  window.onload = () => {
+    check = false
     const Toast = Swal.mixin({
       toast: true,
       position: 'top-end',
@@ -269,8 +277,9 @@
   }
 
 
-</script>
 
+</script>
+{{!-- function setup chart --}}
 <script type='text/javascript'>
   // drawChart
   function DrawChart(label, datas, optionChart, titleChart, tagMaster, displays) {
@@ -332,12 +341,20 @@
   }
 
 </script>
-
+{{!-- function setup line chart --}}
 <script type='text/javascript'>
-  var arrProfits = {{{ arrProfit }}}
+  var arrProfits = {{{ arrProfit }}} // data of each profit of product
+  var arr_filterCharts = {{{ arr_filterCharts }}} // data of rating star, profit, order, number of each product
+  var rating = [], orders = [], quantity = [];
+  arr_filterCharts.forEach(s => {
+    rating.push(s.total_Rating)
+    orders.push(s.total_Order)
+    quantity.push(s.total_Quantity)
+  })
   var arrTitles_barChart = []
   var barChart_value = []
   arrProfits.forEach(s => { arrTitles_barChart.push(s.title); barChart_value.push(s.values) })
+
   function Draw_optionChart(label, datas, optionChart, titleChart, tagMaster) {
     var ctx_chart = document.getElementById(tagMaster).getContext('2d');
     var chart_option = new Chart(ctx_chart, {
@@ -394,7 +411,23 @@
     });
     change_chart.onclick = async () => {
       chart_option.destroy()
-      await Draw_optionChart(arrTitles_barChart, barChart_value, option_chart.value, 'Profit of products', 'proProfit')
+      //await Draw_optionChart(arrTitles_barChart, barChart_value, option_chart.value, 'Profit of products', 'proProfit')
+      switch (option_value.value) {
+        case '1':
+          await Draw_optionChart(arrTitles_barChart, barChart_value, option_chart.value, 'Profit of products', 'proProfit')
+          break;
+        case '2':
+          await Draw_optionChart(arrTitles_barChart, rating, option_chart.value, 'Profit of products', 'proProfit')
+          break;
+        case '3':
+          await Draw_optionChart(arrTitles_barChart, orders, option_chart.value, 'Profit of products', 'proProfit')
+          break;
+        case '4':
+          await Draw_optionChart(arrTitles_barChart, quantity, option_chart.value, 'Profit of products', 'proProfit')
+          break;
+        default:
+          await Draw_optionChart(arrTitles_barChart, barChart_value, option_chart.value, 'Profit of products', 'proProfit')
+      }
     }
     saveImg1.onclick = () => {
       downloadImage(chart_option)
@@ -402,7 +435,7 @@
   }
 </script>
 
-
+{{!-- get values in api --}}
 <script type='text/javascript'>
 
   // setup data for bar chart

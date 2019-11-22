@@ -3,37 +3,29 @@ var bcrypt = require('bcrypt-nodejs');
 var mongoose = require('mongoose');
 passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
-const mongo = mongoose.connect('mongodb://localhost:27017/shopping',{useNewUrlParser: true});
+const mongo = mongoose.connect('mongodb://localhost:27017/shopping', {
+    useNewUrlParser: true
+});
 mongo.then(() => {
     console.log('connected');
-    }).catch((err) => {
+}).catch((err) => {
     console.log('err', err);
-    });
-var user = [
-    new User({
-        email: 'nhatnguyen00198@gmail.com',
-        password: '1234',
-        fullName: 'Nhat Nguyen',
-        phoneNum: '0123123123',
-        address: '01 Yersin, district 1, Ho Chi Minh city, VN',
-        role: 'Manager',
-        status: 'Active',
-        company: 'Greenwich of University',
-        description: 'TOP 2 student',
-        birthday: ''
-    })
-];
+});
+var newUser = new User();
+newUser.email = 'nhatnguyen00198@gmail.com';
+newUser.password = newUser.encryptPassword('12345');
+newUser.fullName = 'Hello world'
+newUser.phoneNum = '0123456789';
+newUser.description = 'Hi';
+newUser.status = 'Active';
+newUser.role = 'Manager';
+newUser.address = '01 Yersin, district 1, Ho Chi Minh city, VN';
+newUser.company = 'Greenwich of University';
+newUser.birthday = null;
+newUser.save(function (err, result) {
+    exit();
+});
 
-var done = 0;
-for(var i = 0 ; i< user.length; i++){
-    //user[i].encryptPassword(user[i].password)
-    user[i].save(function(err,result){
-        done++;
-        if(done == user.length){
-            exit();
-        }
-    });
-}
-function exit(){
+function exit() {
     mongoose.disconnect();
 }

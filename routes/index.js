@@ -17,10 +17,30 @@ router.get('/', isLoggedIn, async (req, res) => {
   var totalProfit = 0;
   var totalOrder = 0;
   Product.find(async (err, docs) => {
+    var arr_filterChart = []
     for (var i = 0; i < docs.length; i++) {
       totalOrder += docs[i].orderList.length; // total order each product
       totalProfit += docs[i].totalProfit // sum total profit of each product.
+      docs[i].totalOrder_eachProduct = 0
+      docs[i].totalQuantity_eachProduct = 0
+      docs[i].orderList.forEach(s => {
+        if (s.status != -1) {
+          docs[i].totalOrder_eachProduct++
+          docs[i].totalQuantity_eachProduct += s.totalQuantity
+        }
+
+      })
+      var object_filter_chart = {
+        'proName': docs[i].title,
+        'total_Rating': docs[i].productRate,
+        'total_Order': docs[i].totalOrder_eachProduct,
+        'total_Quantity': docs[i].totalQuantity_eachProduct
+      }
+      arr_filterChart.push(object_filter_chart)
     }
+    res.locals.arr_filterCharts = await JSON.stringify(arr_filterChart)
+
+
     // view compare profit of today with yesterday
     var dailySales = await glosbe_Daily.glosbeDaily()
     totalItemProfit = totalProfit;
@@ -38,9 +58,9 @@ router.get('/', isLoggedIn, async (req, res) => {
       totalProfit: -1
     }).limit(5).exec(async (err, rs) => {
       var i = 1;
-      await rs.forEach(s=>{
+      await rs.forEach(s => {
         s.number = i
-        i++ 
+        i++
       })
       res.locals.top5_Profit = await rs
     })
@@ -49,9 +69,9 @@ router.get('/', isLoggedIn, async (req, res) => {
       productRate: -1
     }).limit(5).exec(async (err, rs) => {
       var i = 1;
-      await rs.forEach(s=>{
+      await rs.forEach(s => {
         s.number = i
-        i++ 
+        i++
       })
       res.locals.top5_rating = await rs
     })
