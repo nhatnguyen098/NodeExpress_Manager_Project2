@@ -8,20 +8,20 @@
           <p class="card-category">Synthesize information of each product</p>
         </div>
         <form action="/order/filter_status" method="post">
-            <div class="row">
-              <div class="form-group col-4">
-                <select class="form-control" name="status" id="status">
-                  <option value="2">Order Status</option>
-                  <option value="1">Done</option>
-                  <option value="0">Pending</option>
-                  <option value="-1">Cancel</option>
-                </select>
-              </div>
-              <div class="form-group col-4">
-                <button type="submit" class="btn btn-primary">Filter</button>
-              </div>
+          <div class="row">
+            <div class="form-group col-4">
+              <select class="form-control" name="status" id="status">
+                <option value="2">Order Status</option>
+                <option value="1">Done</option>
+                <option value="0">Pending</option>
+                <option value="-1">Cancel</option>
+              </select>
             </div>
-          </form>
+            <div class="form-group col-4">
+              <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+          </div>
+        </form>
         <div class="card-body">
           <div class="table-responsive">
             <table class="table table-hover">

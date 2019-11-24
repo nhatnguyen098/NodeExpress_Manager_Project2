@@ -52,7 +52,7 @@ module.exports = {
         // task pending - order
         var arr = []
         var obj = {
-            'message': 0
+            'message': 0,
         }
         // notification for new order
         var today = new Date()
@@ -62,9 +62,13 @@ module.exports = {
             /// notification total pending order
             if (rs) {
                 obj.message = obj.message + 1
-                obj.task_pending = rs.length
-                await rs.forEach(s => {
-                    arr.push(s)
+                obj.task_pending = 0
+                rs.forEach(s => {
+                    s.orderList.forEach(x => {
+                        if (x.status == 0) {
+                            obj.task_pending++
+                        }
+                    })
                 })
             }
             // notification new order today
@@ -78,7 +82,7 @@ module.exports = {
                     }
                 })
             })
-            if(check == true){
+            if (check == true) {
                 obj.message++
                 obj.new_order = await count
                 obj.date_new = today.toISOString().slice(0, 10)

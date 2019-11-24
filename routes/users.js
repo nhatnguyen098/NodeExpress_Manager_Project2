@@ -10,7 +10,6 @@ var passport = require('passport')
 
 
 router.post('/filterEmail', function (req, res, next) {
-  console.log(req.body.email)
   if(req.body.email && req.body.email.trim()){
     User.find({
       'email': {
@@ -31,7 +30,7 @@ router.post('/filterEmail', function (req, res, next) {
       })
     })
   }else{
-    res.redirect('userList')
+    res.redirect('userList/1')
   }
   
 })
@@ -44,10 +43,16 @@ var csurfProtection = csrf();
 router.use(csurfProtection);
 //isLoggedIn
 
-router.get('/userList', isLoggedIn, (req, res) => {
-  User.find((err, docs) => {
+router.get('/userList/:page', isLoggedIn,async (req, res) => {
+  await User.paginate({}, { // pagination
+    page: req.params.page,
+    limit: 10
+  }, async (err, rs) => {
+    var docs = rs.docs
+    var numberOrder = (Number(req.params.page) - 1) * 10 + 1
     for (var i = 0; i < docs.length; i++) {
-      docs[i].number = (i + 1)
+      docs[i].number = numberOrder
+      numberOrder++
     }
     res.render('user/userList', {
       users: docs,
