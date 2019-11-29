@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Product = require('../models/product')
+var User = require('../models/user')
 var url = require('url');
 var filter = require('../config/filter_Func')
 
@@ -75,48 +76,81 @@ router.post('/filter_status', async (req, res) => {
 router.get('/orderDetail/:numberOrder', async (req, res) => {
     var numOrder = req.params.numberOrder
     var arr = numOrder.split('-')
-    Product.findById(arr[0], (err, doc) => {
-        doc.orderList.forEach(s => {
-            if (s.numberOrder == arr[1]) {
-                s.proId = doc._id
-                s.proName = doc.title
-                s.proPrice = doc.price
-                s.imgPro = doc.imagePath
-                if (s.couponCode.discount) {
-                    s.totalPrice -= (s.totalPrice * s.couponCode.discount)
-                }
-                if (s.status == 1) {
-                    s.status = 'Done'
-                } else if (s.status == -1) {
-                    s.status = 'Cancel'
-                } else if (s.status == 0) {
-                    s.status = 'Pending'
-                }
-                res.render('orders/orderDetail', {
-                    orders: 'order',
-                    orderDetail: s,
-                    sessionUser: req.session.user,
-                    notification: req.session.messsages
-                })
+    User.findById(arr[0], (err, user) => {
+        console.log(user)
+        Product.find((err, product) => {
+            var arrProduct = [],
+                arr_proDelet = []
+            var obj = {
+                'orderList': []
             }
+            user.orderList.forEach(s => {
+                if (s.number == arr[1]) {
+                    obj.totalPrice = s.totalPrice
+                    obj.orderDate = s.orderDate
+                    s.sub_order.forEach(x => {
+                        product.forEach(pro => {
+                            if (pro._id == x.proId) {
+                                x.orderNumber.forEach(o => {
+                                    pro.orderList.forEach(p => {
+                                        if (o == p.numberOrder) {
+                                            p.proName = pro.title
+                                            p.proPrice = pro.price
+                                            p.proId = pro._id
+                                            arrProduct.push(p) // view product detail
+                                            // setup delete product
+                                            var proDelete = {
+                                                '_id': pro._id,
+                                                'numberOrder': p.numberOrder
+                                            }
+                                            arr_proDelet.push(proDelete)
+                                        }
+                                    })
+                                })
+                            }
+                        })
+                    })
+                }
+            })
+            obj.userInfo = arrProduct[0].userInfo
+            obj.couponCode = arrProduct[0].couponCode
+            obj.orderList = arrProduct
+            if (arrProduct[0].status == 1) {
+                obj.status = 'Done'
+            } else if (arrProduct[0].status == 0) {
+                obj.status = 'Pending'
+            } else if (arrProduct[0].status == -1) {
+                obj.status = 'Cancel'
+            }
+            res.render('orders/orderDetail', {
+                orders: 'order',
+                orderDetail: obj,
+                sessionUser: req.session.user,
+                notification: req.session.messsages,
+                arr_proDelet: JSON.stringify(arr_proDelet)
+            })
         })
     })
 })
 
 router.post('/updateStatus_Order', async (req, res) => {
-    var lastStatus = 0
-    var pro = Product.findById(req.body.proId, async (err, doc) => {
-        if (doc.orderList.length > 0) {
-            doc.orderList.forEach(s => {
-                if (s.numberOrder == req.body.numOrder) {
-                    lastStatus = s.status
-                }
-            })
-        }
-
-        var updStatus = await Product.findOneAndUpdate({
-            '_id': req.body.proId,
-            'orderList.numberOrder': Number(req.body.numOrder)
+    var arr_proDelet = JSON.parse(req.body.arrPro)
+    //console.log(arr_proDelet)
+    /// from products arr -> product object -> orders of product -> find order -> change order status
+    arr_proDelet.forEach(pro => {
+        var lastStatus = 0
+        // Product.findById(pro._id, (err, doc) => {
+        //     if (doc.orderList.length > 0) {
+        //         doc.orderList.forEach(s => {
+        //             if (s.numberOrder == pro.numberOrder) {
+        //                 lastStatus = s.status
+        //             }
+        //         })
+        //     }
+        // })
+        Product.findOneAndUpdate({
+            '_id': pro._id,
+            'orderList.numberOrder': pro.numberOrder
         }, {
             "$set": {
                 'orderList.$.status': Number(req.body.status),
@@ -124,42 +158,56 @@ router.post('/updateStatus_Order', async (req, res) => {
         }, {
             upsert: true,
             new: true
-        }, async (err, docs) => {
-            if (err) {
-                console.log(err)
-            }
-            // console.log(docs)
-            var totalPro_Profit = docs.totalProfit;
-            await docs.orderList.forEach(s => {
-                if (s.status == 1 && s.numberOrder == Number(req.body.numOrder) && (lastStatus == 0 || lastStatus == -1)) {
-                    totalPro_Profit += s.totalHasDiscount
-                } else if ((s.status == 0 || s.status == -1) && s.numberOrder == Number(req.body.numOrder) && lastStatus == 1) {
-                    if (totalPro_Profit != 0) {
-                        totalPro_Profit -= s.totalHasDiscount
-                    }
-                }
-            })
-            var pro = await Product.findOneAndUpdate({
-                _id: req.body.proId
-            }, {
-                $set: {
-                    totalProfit: totalPro_Profit
-                }
-            }, {
-                upsert: true,
-                new: true
-            }, (err, doc) => {
-                console.log(doc)
-            })
-            // console.log(docs)
-            res.redirect('orderList')
+        }, (err, docs) => {
+            // docs.orderList.forEach(s => {
+            //     var totalPro_Profit = 0
+            //     ////////////////
+            //     if (s.status == 1 && s.numberOrder == pro.numberOrder && (lastStatus == 0 || lastStatus == -1)) {
+            //         totalPro_Profit = docs.totalProfit + s.totalHasDiscount
+            //     } else if ((s.status == 0 || s.status == -1) && s.numberOrder == pro.numberOrder && lastStatus == 1) {
+            //         if (totalPro_Profit != 0) {
+            //             totalPro_Profit = docs.totalProfit - s.totalHasDiscount
+            //         }
+            //     }
+            //     Product.findOneAndUpdate({
+            //         _id: pro._id
+            //     }, {
+            //         $set: {
+            //             totalProfit: totalPro_Profit
+            //         }
+            //     }, {
+            //         upsert: true,
+            //         new: true
+            //     }, (err, doc) => {
+
+            //     })
+            // })
         })
+
     })
+    await Product.find((err, products) => {
+        products.forEach(x => {
+            var totalProfit = 0
+            x.orderList.forEach(s => {
+                if (s.status == 1) {
+                    totalProfit += s.totalHasDiscount
+                }
+            })
+            Product.updateOne({
+                '_id': x._id
+            }, {
+                '$set': {
+                    'totalProfit': totalProfit
+                }
+            },{
+                upsert: true,
+                new:true
+            },(err,rs)=>{
+            })
+        })
 
-
-    console.log(lastStatus)
-
-
+    })
+    await res.redirect('orderList')
 })
 
 module.exports = router;

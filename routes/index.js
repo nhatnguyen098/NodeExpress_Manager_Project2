@@ -9,15 +9,16 @@ var filter_Func = require('../config/filter_Func')
 var auto_updateStatusOrder = require('../config/auto_updateStatusOrder')
 
 
-let totalItemProfit = 0;
-let totalAllOrder = 0;
-let obj_DailySales = {}
-
+let totalItemProfit = 0; // setup total profit
+let totalAllOrder = 0; // setup total order
+let obj_DailySales = {} // setup data for daly profit
+let arr_filterChart = [] // setup data for option chart
+let top5_Profit = [], top5_rating = [] // setup top 5 profit and rating
 router.get('/', isLoggedIn, async (req, res) => {
   var totalProfit = 0;
   var totalOrder = 0;
   Product.find(async (err, docs) => {
-    var arr_filterChart = []
+    // var arr_filterChart = []
     for (var i = 0; i < docs.length; i++) {
       totalOrder += docs[i].orderList.length; // total order each product
       totalProfit += docs[i].totalProfit // sum total profit of each product.
@@ -62,6 +63,7 @@ router.get('/', isLoggedIn, async (req, res) => {
         s.number = i
         i++
       })
+      top5_Profit = rs
       res.locals.top5_Profit = await rs
     })
     // filter top 5 product by rating star
@@ -73,6 +75,7 @@ router.get('/', isLoggedIn, async (req, res) => {
         s.number = i
         i++
       })
+      top5_rating = rs
       res.locals.top5_rating = await rs
     })
 
@@ -106,6 +109,9 @@ router.post('/filter_date', async (req, res) => {
     res.locals.lineChart = await JSON.stringify(lineChart) // binding data to line chart
     var message = await glosbe_Daily.message_notification() // view message for header
     var dailySales = await glosbe_Daily.glosbeDaily() // view compare profit of today with yesterday
+    res.locals.arr_filterCharts = await JSON.stringify(arr_filterChart) // send data to option chart
+    res.locals.top5_rating = JSON.stringify(top5_rating) // send data to top 5 rating
+    res.locals.top5_Profit = JSON.stringify(top5_Profit) // send data to top 5 profit
     res.render('pages/index', {
       dashboard: 'dashboard',
       totalProfit: totalItemProfit.toFixed(1), // view total value of product

@@ -160,7 +160,7 @@ router.post('/couponUpload/:id', (req, res) => {
 
         })
     }
-    res.redirect('../couponList')
+    res.redirect('../couponList/1')
 })
 
 

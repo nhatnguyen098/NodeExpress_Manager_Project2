@@ -10,14 +10,15 @@ var passport = require('passport')
 
 
 router.post('/filterEmail', function (req, res, next) {
-  if(req.body.email && req.body.email.trim()){
+  if (req.body.email && req.body.email.trim()) {
     User.find({
       'email': {
-        '$regex' : req.body.email, '$options' : 'i'
+        '$regex': req.body.email,
+        '$options': 'i'
       }
-    },async (err, doc) => {
+    }, async (err, doc) => {
       var number = 1
-      doc.forEach(x=>{
+      doc.forEach(x => {
         x.number = number
         number++
       })
@@ -29,10 +30,10 @@ router.post('/filterEmail', function (req, res, next) {
         // csrfToken: req.csrfToken(),
       })
     })
-  }else{
+  } else {
     res.redirect('userList/1')
   }
-  
+
 })
 
 
@@ -43,7 +44,7 @@ var csurfProtection = csrf();
 router.use(csurfProtection);
 //isLoggedIn
 
-router.get('/userList/:page', isLoggedIn,async (req, res) => {
+router.get('/userList/:page', isLoggedIn, async (req, res) => {
   await User.paginate({}, { // pagination
     page: req.params.page,
     limit: 10
@@ -70,35 +71,33 @@ router.get('/signup/:id', isLoggedIn, function (req, res, next) {
   var messages = req.flash('error')
   if (req.params.id != 'new') {
     User.findById(req.params.id, (err, doc) => {
-      var arr = []
+      var orderList_user = []
       var birthday = ""
       if (doc.birthday) {
         var birthday = doc.birthday.toISOString().slice(0, 10)
       }
-      Product.find((err, docs) => {
-        docs.forEach(x => {
-          x.orderList.forEach(s => {
-            if (s.userInfo.email) {
-              if (s.userInfo.email == doc.email) {
-                s.proId = x._id
-                s.orderDate = s.orderDate.toISOString().slice(0, 19)
-                arr.push(s)
-              }
-            }
-          })
+      if (doc.role == 'Customer') {
+        doc.orderList.forEach(s => {
+          // setup view order list by date
+          var obj_orders = {}
+          obj_orders.orderDate = s.orderDate.toISOString().slice(0, 19)
+          obj_orders.number = s.number
+          obj_orders.email = doc.email
+          obj_orders.id = doc._id
+          orderList_user.push(obj_orders)
+          // end setup view order list by date
         })
-        console.log(doc)
-        res.render('user/signup', {
-          users: doc,
-          csrfToken: req.csrfToken(),
-          messages: messages,
-          hasErrors: messages.length > 0,
-          userBirth: birthday,
-          person: 'person',
-          orderList: arr,
-          sessionUser: req.session.user,
-          notification: req.session.messsages
-        })
+      }
+      res.render('user/signup', {
+        users: doc,
+        csrfToken: req.csrfToken(),
+        messages: messages,
+        hasErrors: messages.length > 0,
+        userBirth: birthday,
+        person: 'person',
+        orderList: orderList_user,
+        sessionUser: req.session.user,
+        notification: req.session.messsages
       })
     })
   } else {
@@ -146,20 +145,21 @@ router.post('/userUpl/:id', (req, res) => {
   }, {
     upsert: true,
     new: true
-  }, async(err, doc) => {
-    await Product.updateMany({
-      'orderList.userInfo.email': doc.email
-    },{
-      '$set':{
-        'orderList.$.userInfo.name':req.body.fullName,
-        'orderList.$.userInfo.phoneNum':req.body.phoneNum,
-        'orderList.$.userInfo.address': req.body.address,
-      }
-    },{
-      upsert:true,
-      new:true
-    },(errs,rs)=>{
-    })
+  }, async (err, doc) => {
+    if (doc.role == 'Customer') {
+      await Product.updateMany({
+        'orderList.userInfo.email': doc.email
+      }, {
+        '$set': {
+          'orderList.$.userInfo.name': req.body.fullName,
+          'orderList.$.userInfo.phoneNum': req.body.phoneNum,
+          'orderList.$.userInfo.address': req.body.address,
+        }
+      }, {
+        upsert: true,
+        new: true
+      }, (errs, rs) => {})
+    }
     await res.redirect('./user/userList')
   })
 })

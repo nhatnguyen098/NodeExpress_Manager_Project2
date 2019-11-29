@@ -19,9 +19,8 @@ module.exports = {
                     } else if (!start_date && !end_date && x.status == 1) {
                         obj.values += x.totalHasDiscount
                     }
-                    arr.push(obj)
-
                 })
+                arr.push(obj)
             })
         })
         return await arr

@@ -85,7 +85,7 @@ var products = [
     }),
     new Product({
         imagePath: 'product-10.jpg',
-        title: 'Black-T-shirt',
+        title: 'Black-T-Shirt',
         description: 'Using for Women',
         userGroup: 'women',
         price: 80,
@@ -111,7 +111,7 @@ var products = [
     }),
     new Product({
         imagePath: 'product-14.jpg',
-        title: 'Black T-Shirt',
+        title: 'Rose-Shirt',
         description: 'Using for Women',
         userGroup: 'women',
         price: 23,
