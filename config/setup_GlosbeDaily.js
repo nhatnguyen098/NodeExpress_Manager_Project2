@@ -49,18 +49,16 @@ module.exports = {
         }
         return await obj_DailySales
     },
-    'message_notification': async () => {
+    'message_notification': async function () {
         // notification for new order
-        var obj = {
+        var obj = await {
             'message': 0,
         }
-        var today = new Date()
-
-        await User.find({
+        var users = await User.find({
             'role': 'Customer'
         }, async (err, users) => {
+            var today = new Date()
             await Product.find(async (err, pro) => {
-
                 await users.forEach(u => {
                     var count = 0
                     var check = false
@@ -88,9 +86,11 @@ module.exports = {
                     }
                 })
             })
+
         })
-        // end notification for new order
         return await obj
+        // end notification for new order
+
 
 
 
@@ -127,5 +127,5 @@ module.exports = {
         //     }
         // })
 
-    }
+    },
 }

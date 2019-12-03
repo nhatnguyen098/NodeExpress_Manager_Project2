@@ -48,8 +48,6 @@ router.get('/orderList', isLoggedIn, async (req, res) => {
                 })
             })
         })
-        arrFilters = arr
-        //res.locals.arrFilter = JSON.stringify(arr)
         res.render('orders/orderList', {
             orders: 'order',
             orderList: arr,
@@ -60,8 +58,7 @@ router.get('/orderList', isLoggedIn, async (req, res) => {
 
 })
 
-router.get('/filter_status/:date', async (req,res)=>{
-    console.log(req.params.date)
+router.get('/filter_newOrder', async (req,res)=>{
     var arr = []
     await User.find({
         'role': 'Customer'
@@ -80,24 +77,26 @@ router.get('/filter_status/:date', async (req,res)=>{
                     obj.totalItem = 0
                     obj.id = u._id
                     obj.numberOrder = s.number
+                    var check = false
                     s.sub_order.forEach(sb => {
                         obj.totalItem = obj.totalItem + sb.orderNumber.length
                         sb.orderNumber.forEach(o => {
                             products.forEach(result => {
                                 result.orderList.forEach(p => {
                                     if (result._id == sb.proId && p.numberOrder == o) {
-                                        if (p.status == 1) {
+                                        if (p.status == 0) {
                                             obj.status = 'Pending'
                                             check = true
-                                            obj.number = numberStt
-                                            arr.push(obj)
                                         }
                                     }
                                 })
                             })
                         })
                     })
-
+                    if(check == true){
+                        obj.number = numberStt
+                        arr.push(obj)
+                    }
                 })
             })
         })
@@ -195,7 +194,6 @@ router.get('/orderDetail/:numberOrder', async (req, res) => {
 
 router.post('/updateStatus_Order', async (req, res) => {
     var arr_proDelet = JSON.parse(req.body.arrPro)
-    console.log(arr_proDelet)
     // forEeach find proId -> get old status + profit -> findoneandUpdate -> update status
     await arr_proDelet.forEach(arr => {
         Product.findOneAndUpdate({

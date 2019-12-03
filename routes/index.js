@@ -24,6 +24,9 @@ router.get('/', isLoggedIn, async (req, res) => {
     })
   })
   Product.find(async (err, docs) => {
+    // setup message notifications
+    var message = await glosbe_Daily.message_notification()
+    req.session.messsages = message
     // var arr_filterChart = []
     for (var i = 0; i < docs.length; i++) {
       // totalOrder += docs[i].orderList.length; // total order each product
@@ -64,7 +67,7 @@ router.get('/', isLoggedIn, async (req, res) => {
     res.locals.arrPercent = await JSON.stringify(pieChart)
 
     // filter top 5 product by profit
-    Product.find().sort({
+    await Product.find().sort({
       totalProfit: -1
     }).limit(5).exec(async (err, rs) => {
       var i = 1;
@@ -73,10 +76,10 @@ router.get('/', isLoggedIn, async (req, res) => {
         i++
       })
       top5_Profit = rs
-      res.locals.top5_Profit = await rs
+      res.locals.top5_Profit = rs
     })
     // filter top 5 product by rating star
-    Product.find().sort({
+    await Product.find().sort({
       productRate: -1
     }).limit(5).exec(async (err, rs) => {
       var i = 1;
@@ -85,13 +88,11 @@ router.get('/', isLoggedIn, async (req, res) => {
         i++
       })
       top5_rating = rs
-      res.locals.top5_rating = await rs
+      res.locals.top5_rating = rs
     })
 
     // var auto_updateStatus_Order = await auto_updateStatusOrder(2)
-    var message = await glosbe_Daily.message_notification()
-    req.session.messsages = message
-    res.render('pages/index', {
+    await res.render('pages/index', {
       dashboard: 'dashboard', // 
       totalProfit: totalProfit.toFixed(1),
       totalOrder: totalOrder,
