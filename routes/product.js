@@ -5,6 +5,7 @@ const multer = require('multer');
 const multipart = require('connect-multiparty')
 var filter = require('../config/filter_Func')
 var check = require('../config/check_valid')
+var totalValues = require('../config/setup_totalValues')
 
 /* GET home page. */
 
@@ -74,7 +75,7 @@ router.get('/exportData', (req, res) => {
 
 router.post('/filter_Month', async (req, res) => {
   if (req.body.searchMonth == 0) {
-    res.redirect('./productList')
+    res.redirect('./productList/1')
   } else {
     var filter_month = await filter.filter_month(req.body.searchMonth)
     var sumQuantity = 0
@@ -108,19 +109,20 @@ router.get('/productList/:page', isLoggedIn, async (req, res) => {
     limit: 10
   }, async (err, rs) => { // to do view product list
     var docs = rs.docs
+    console.log(docs)
     var sumProfit = 0;
     var sumQuantity = 0;
     var sumOrder = 0;
     var numberOrder = (Number(req.params.page) - 1) * 10 + 1
     for (var i = 0; i < docs.length; i++) {
+      var totalOrder_eachProduct = await totalValues.totalOrder_eachProduct(docs[i]._id)
       docs[i].number = numberOrder
       numberOrder++
       var quantity = 0;
       var totalPrice = 0;
-      var orders = 0;
       for (var s = 0; s < docs[i].orderList.length; s++) {
+        quantity += docs[i].orderList[s].totalQuantity
         if (docs[i].orderList[s].status == 1) {
-          quantity += docs[i].orderList[s].totalQuantity
           var discount = 1;
           if (docs[i].orderList[s].couponCode.discount) {
             discount = 1 - docs[i].orderList[s].couponCode.discount
@@ -131,9 +133,9 @@ router.get('/productList/:page', isLoggedIn, async (req, res) => {
       var obj = {
         "qty": quantity,
         "price": totalPrice.toFixed(1),
-        "order": docs[i].orderList.length
+        "order": totalOrder_eachProduct
       }
-      sumOrder += docs[i].orderList.length
+      sumOrder += totalOrder_eachProduct
       sumProfit += totalPrice
       sumQuantity += quantity
       docs[i].orderInfo = obj

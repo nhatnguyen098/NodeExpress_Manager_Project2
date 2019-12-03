@@ -7,6 +7,7 @@ var chart = require('../config/setup_Chart')
 var glosbe_Daily = require('../config/setup_GlosbeDaily')
 var filter_Func = require('../config/filter_Func')
 var auto_updateStatusOrder = require('../config/auto_updateStatusOrder')
+var User = require('../models/user')
 
 
 let totalItemProfit = 0; // setup total profit
@@ -17,10 +18,15 @@ let top5_Profit = [], top5_rating = [] // setup top 5 profit and rating
 router.get('/', isLoggedIn, async (req, res) => {
   var totalProfit = 0;
   var totalOrder = 0;
+  User.find((err,user)=>{
+    user.forEach(s=>{
+      totalOrder += s.orderList.length
+    })
+  })
   Product.find(async (err, docs) => {
     // var arr_filterChart = []
     for (var i = 0; i < docs.length; i++) {
-      totalOrder += docs[i].orderList.length; // total order each product
+      // totalOrder += docs[i].orderList.length; // total order each product
       totalProfit += docs[i].totalProfit // sum total profit of each product.
       docs[i].totalOrder_eachProduct = 0
       docs[i].totalQuantity_eachProduct = 0
@@ -31,6 +37,7 @@ router.get('/', isLoggedIn, async (req, res) => {
         }
 
       })
+      // setup data for option chart
       var object_filter_chart = {
         'proName': docs[i].title,
         'total_Rating': docs[i].productRate,
@@ -39,6 +46,7 @@ router.get('/', isLoggedIn, async (req, res) => {
       }
       arr_filterChart.push(object_filter_chart)
     }
+    // send data to option chart
     res.locals.arr_filterCharts = await JSON.stringify(arr_filterChart)
 
 
@@ -54,6 +62,7 @@ router.get('/', isLoggedIn, async (req, res) => {
     res.locals.arrProfit = await JSON.stringify(barChart)
     var pieChart = await chart.pieChart(totalProfit)
     res.locals.arrPercent = await JSON.stringify(pieChart)
+
     // filter top 5 product by profit
     Product.find().sort({
       totalProfit: -1
@@ -110,8 +119,8 @@ router.post('/filter_date', async (req, res) => {
     var message = await glosbe_Daily.message_notification() // view message for header
     var dailySales = await glosbe_Daily.glosbeDaily() // view compare profit of today with yesterday
     res.locals.arr_filterCharts = await JSON.stringify(arr_filterChart) // send data to option chart
-    res.locals.top5_rating = JSON.stringify(top5_rating) // send data to top 5 rating
-    res.locals.top5_Profit = JSON.stringify(top5_Profit) // send data to top 5 profit
+    res.locals.top5_rating = await JSON.stringify(top5_rating) // send data to top 5 rating
+    res.locals.top5_Profit = await JSON.stringify(top5_Profit) // send data to top 5 profit
     res.render('pages/index', {
       dashboard: 'dashboard',
       totalProfit: totalItemProfit.toFixed(1), // view total value of product

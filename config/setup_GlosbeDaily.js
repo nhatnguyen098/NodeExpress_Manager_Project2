@@ -1,4 +1,5 @@
 var Product = require('../models/product')
+var User = require('../models/user')
 module.exports = {
     'glosbeDaily': async function () {
         var today = new Date()
@@ -48,46 +49,83 @@ module.exports = {
         }
         return await obj_DailySales
     },
-    'message_notification': async function () {
-        // task pending - order
-        var arr = []
+    'message_notification': async () => {
+        // notification for new order
         var obj = {
             'message': 0,
         }
-        // notification for new order
         var today = new Date()
-        var pro_new = await Product.find({
-            'orderList.status': 0,
-        }, async (err, rs) => {
-            /// notification total pending order
-            if (rs) {
-                obj.message = obj.message + 1
-                obj.task_pending = 0
-                rs.forEach(s => {
-                    s.orderList.forEach(x => {
-                        if (x.status == 0) {
-                            obj.task_pending++
+
+        await User.find({
+            'role': 'Customer'
+        }, async (err, users) => {
+            await Product.find(async (err, pro) => {
+
+                await users.forEach(u => {
+                    var count = 0
+                    var check = false
+                    u.orderList.forEach(o => {
+                        if (o.orderDate.toISOString().slice(0, 10) == today.toISOString().slice(0, 10)) {
+                            o.sub_order.forEach(so => {
+                                so.orderNumber.forEach(no => {
+                                    pro.forEach(products => {
+                                        products.orderList.forEach(p => {
+                                            if (p.status == 0 && products._id == so.proId && p.numberOrder == no) {
+                                                check = true
+                                                //count++
+                                            }
+                                        })
+                                    })
+                                })
+                            })
                         }
                     })
-                })
-            }
-            // notification new order today
-            var check = false
-            var count = 0
-            await rs.forEach(s => {
-                s.orderList.forEach(x => {
-                    if (x.orderDate.toISOString().slice(0, 10) == today.toISOString().slice(0, 10) && x.status == 0) {
-                        check = true
+                    if (check == true) {
                         count++
+                        obj.new_order = count
+                        obj.message = obj.message + 1
+                        obj.date_new = today.toISOString().slice(0, 10)
                     }
                 })
             })
-            if (check == true) {
-                obj.message++
-                obj.new_order = await count
-                obj.date_new = today.toISOString().slice(0, 10)
-            }
         })
+        // end notification for new order
         return await obj
+
+
+
+        // await Product.find({
+        //     'orderList.status': 0,
+        // }, async (err, rs) => {
+        //     /// notification total pending order
+        //     if (rs) {
+        //         obj.message = obj.message + 1
+        //         obj.task_pending = 0
+        //         rs.forEach(s => {
+        //             s.orderList.forEach(x => {
+        //                 if (x.status == 0) {
+        //                     obj.task_pending++
+        //                 }
+        //             })
+        //         })
+        //     }
+        //     // notification new order today
+        //     var check = false
+        //     var count = 0
+        //     await rs.forEach(s => {
+        //         s.orderList.forEach(x => {
+        //             if (x.orderDate.toISOString().slice(0, 10) == today.toISOString().slice(0, 10) && x.status == 0) {
+        //                 check = true
+        //                 count++
+        //             }
+        //         })
+        //     })
+        //     if (check == true) {
+        //         obj.message++
+        //         obj.new_order = await count
+        //         obj.date_new = today.toISOString().slice(0, 10)
+        //     }
+        // })
+
     }
 }

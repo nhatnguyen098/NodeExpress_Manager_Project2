@@ -15,7 +15,7 @@
               <div class="card">
                 <div class="card-body">
                   <form action="/order/updateStatus_Order" method="post">
-                  <input class="form-control" id="arrPro" name="arrPro" value="{{arr_proDelet}}" hidden="false"/>
+                    <input class="form-control" id="arrPro" name="arrPro" value="{{arr_proDelet}}" hidden="false" />
                     {{#orderDetail}}
                     <div class="row">
                       <div class="col-md-12">
@@ -124,19 +124,23 @@
                 </div>
               </div>
             </div>
-            <div class="col-4" style="padding-right:50px;">
-              <div class="card">
-                <div class="card-body">
-                  <div class="form-group">
-                    <img src="../../images/{{orderDetail.imgPro}}"
-                      class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
-                      alt="Image Product" />
-                  </div>
-                  <h6 class="card-category text-gray text-center">{{orderDetail.proName}}</h6>
-                </div>
-              </div>
 
+            <div class="col-4 row">
+              {{#each orderDetail.orderList}}
+                <div class="card col-6">
+                  <div class="card-body">
+                    <div class="form-group">
+                      <img src="../../images/{{this.img}}"
+                        class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
+                        alt="Image Product" />
+                    </div>
+                    <h6 class="card-category text-gray text-center">{{this.proName}}</h6>
+                    <h6 class="card-category text-gray text-center">Size: {{this.Size}}</h6>
+                  </div>
+                </div>
+              {{/each}}
             </div>
+
           </div>
           <div class="form-group row">
             <div class="col-sm-12">
