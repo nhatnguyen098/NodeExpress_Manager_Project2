@@ -70,7 +70,6 @@ module.exports = {
                                         products.orderList.forEach(p => {
                                             if (p.status == 0 && products._id == so.proId && p.numberOrder == no) {
                                                 check = true
-                                                //count++
                                             }
                                         })
                                     })

@@ -14,15 +14,43 @@ let totalItemProfit = 0; // setup total profit
 let totalAllOrder = 0; // setup total order
 let obj_DailySales = {} // setup data for daly profit
 let arr_filterChart = [] // setup data for option chart
-let top5_Profit = [], top5_rating = [] // setup top 5 profit and rating
+let top5_Profit = [],
+  top5_rating = [] // setup top 5 profit and rating
 router.get('/', isLoggedIn, async (req, res) => {
   var totalProfit = 0;
   var totalOrder = 0;
-  User.find((err,user)=>{
-    user.forEach(s=>{
+  User.find((err, user) => {
+    user.forEach(s => {
       totalOrder += s.orderList.length
     })
   })
+
+  // filter top 5 product by profit
+  var top_5_Profit = []
+  await Product.find().sort({
+    totalProfit: -1
+  }).limit(5).exec(async (err, rs) => {
+    var i = 1;
+    await rs.forEach(s => {
+      s.number = i
+      i++
+    })
+    res.locals.top5_Profit = await rs
+  })
+  // filter top 5 product by rating star
+  await Product.find().sort({
+    productRate: -1
+  }).limit(5).exec(async (err, rs) => {
+    var i = 1;
+    await rs.forEach(s => {
+      s.number = i
+      i++
+    })
+    //top5_rating = await rs
+    res.locals.top5_rating = await rs
+  })
+
+  // data for index page
   Product.find(async (err, docs) => {
     // setup message notifications
     var message = await glosbe_Daily.message_notification()
@@ -66,30 +94,6 @@ router.get('/', isLoggedIn, async (req, res) => {
     var pieChart = await chart.pieChart(totalProfit)
     res.locals.arrPercent = await JSON.stringify(pieChart)
 
-    // filter top 5 product by profit
-    await Product.find().sort({
-      totalProfit: -1
-    }).limit(5).exec(async (err, rs) => {
-      var i = 1;
-      await rs.forEach(s => {
-        s.number = i
-        i++
-      })
-      top5_Profit = rs
-      res.locals.top5_Profit = rs
-    })
-    // filter top 5 product by rating star
-    await Product.find().sort({
-      productRate: -1
-    }).limit(5).exec(async (err, rs) => {
-      var i = 1;
-      await rs.forEach(s => {
-        s.number = i
-        i++
-      })
-      top5_rating = rs
-      res.locals.top5_rating = rs
-    })
 
     // var auto_updateStatus_Order = await auto_updateStatusOrder(2)
     await res.render('pages/index', {

@@ -48,6 +48,8 @@ router.get('/orderList', isLoggedIn, async (req, res) => {
                 })
             })
         })
+        arrFilters = arr
+        // res.locals.arrFilter = JSON.stringify(arr)
         res.render('orders/orderList', {
             orders: 'order',
             orderList: arr,
@@ -100,8 +102,6 @@ router.get('/filter_newOrder', async (req,res)=>{
                 })
             })
         })
-        arrFilters = arr
-        //res.locals.arrFilter = JSON.stringify(arr)
         res.render('orders/orderList', {
             orders: 'order',
             orderList: arr,
@@ -111,8 +111,6 @@ router.get('/filter_newOrder', async (req,res)=>{
     })
 })
 router.post('/filter_status', async (req, res) => {
-    //var arrFilters = JSON.parse(req.body.arrValue)
-    // console.log(arrFilters)
     if (req.body.status == 2) {
         res.redirect('./orderList')
     }else {

@@ -54,7 +54,7 @@ router.post('/read_csv', upload.single('file'), (req, res) => {
             <ul>
                 <li>Email: ${obj.email}.</li>
                 <li>Start Date: ${new Date()}.</li>
-                <li>Discount: ${local[1]}</li>
+                <li>Discount: ${local[1]} %</li>
                 <li>Conpon Code:${coupons._id}</li>
             </ul>
             `;
@@ -62,7 +62,7 @@ router.post('/read_csv', upload.single('file'), (req, res) => {
         }
     })
 
-    res.redirect('../coupon/couponList')
+    res.redirect('../coupon/couponList/1')
 })
 
 router.post('/filter', async (req, res) => {

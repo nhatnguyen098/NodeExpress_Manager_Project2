@@ -7,23 +7,22 @@
           <h4 class="card-title mt-0">Order List</h4>
           <p class="card-category">Synthesize information of each product</p>
         </div>
-        <form action="/order/filter_status" method="post">
-          <div class="row">
-            <div class="form-group col-4">
-              <input type="text" id="arrValue" name="arrValue" value="{{arrFilter}}" hidden="false">
-              <select class="form-control" name="status" id="status">
-                <option value="2">Order Status</option>
-                <option value="Done">Done</option>
-                <option value="Pending">Pending</option>
-                <option value="Cancel">Cancel</option>
-              </select>
-            </div>
-            <div class="form-group col-4">
-              <button type="submit" class="btn btn-primary">Filter</button>
-            </div>
-          </div>
-        </form>
         <div class="card-body">
+          <form action="/order/filter_status" method="post">
+            <div class="row">
+              <div class="form-group col-4">
+                <select class="form-control" name="status" id="status">
+                  <option value="2">Order Status</option>
+                  <option value="Done">Done</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Cancel">Cancel</option>
+                </select>
+              </div>
+              <div class="form-group col-4">
+                <button type="submit" class="btn btn-primary">Filter</button>
+              </div>
+            </div>
+          </form>
           <div class="table-responsive">
             <table class="table table-hover">
               <thead class="text-primary">
