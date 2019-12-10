@@ -89,42 +89,47 @@ module.exports = {
         })
         return await obj
         // end notification for new order
-
-
-
-
-        // await Product.find({
-        //     'orderList.status': 0,
-        // }, async (err, rs) => {
-        //     /// notification total pending order
-        //     if (rs) {
-        //         obj.message = obj.message + 1
-        //         obj.task_pending = 0
-        //         rs.forEach(s => {
-        //             s.orderList.forEach(x => {
-        //                 if (x.status == 0) {
-        //                     obj.task_pending++
-        //                 }
-        //             })
-        //         })
-        //     }
-        //     // notification new order today
-        //     var check = false
-        //     var count = 0
-        //     await rs.forEach(s => {
-        //         s.orderList.forEach(x => {
-        //             if (x.orderDate.toISOString().slice(0, 10) == today.toISOString().slice(0, 10) && x.status == 0) {
-        //                 check = true
-        //                 count++
-        //             }
-        //         })
-        //     })
-        //     if (check == true) {
-        //         obj.message++
-        //         obj.new_order = await count
-        //         obj.date_new = today.toISOString().slice(0, 10)
-        //     }
-        // })
-
     },
+    'order_pending': async () => {
+        var arr = []
+        var users = await User.find({
+            'role': 'Customer'
+        }, async (err, users) => {
+            await Product.find((err, products) => {
+                var number = 0
+                users.forEach(u => {
+                    u.orderList.forEach(user_order => {
+                        var check = false
+                        var obje = {}
+                        user_order.sub_order.forEach(sub_or => {
+                            products.forEach(pro => {
+                                if (sub_or.proId == pro._id) {
+                                    sub_or.orderNumber.forEach(order_num => {
+                                        pro.orderList.forEach(pro_order => {
+                                            if (order_num == pro_order.numberOrder && pro_order.status == 0) {
+                                                obje.orderDate = user_order.orderDate
+                                                obje.email = u.email
+                                                obje.status = 'Pending'
+                                                obje.totalItem = sub_or.orderNumber.length
+                                                obje.totalPrice = user_order.totalPrice
+                                                check = true
+                                            }
+                                        })
+                                    })
+                                }
+                            })
+                        })
+                        if (check == true) {
+                            number++
+                            obje.number = number
+                            arr.push(obje)
+                            //obj.message = obj.message + 1
+                        }
+                    })
+                })
+            })
+
+        })
+        return await arr
+    }
 }

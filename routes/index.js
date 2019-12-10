@@ -24,7 +24,8 @@ router.get('/', isLoggedIn, async (req, res) => {
       totalOrder += s.orderList.length
     })
   })
-
+  var order_pend = await glosbe_Daily.order_pending()
+  await console.log(order_pend)
   // filter top 5 product by profit
   var top_5_Profit = []
   await Product.find().sort({

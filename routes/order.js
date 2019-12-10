@@ -208,8 +208,8 @@ router.post('/updateStatus_Order', async (req, res) => {
         })
 
     })
-    await Product.find((err, docs) => {
-        docs.forEach(pro => {
+    await Product.find(async (err, docs) => {
+        await docs.forEach(pro => {
             var totalValues = 0
             pro.orderList.forEach(p => {
                 if (p.status == 1) {
