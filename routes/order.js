@@ -60,7 +60,7 @@ router.get('/orderList', isLoggedIn, async (req, res) => {
 
 })
 
-router.get('/filter_newOrder', async (req,res)=>{
+router.get('/filter_newOrder/:date', async (req,res)=>{
     var arr = []
     await User.find({
         'role': 'Customer'
@@ -85,7 +85,7 @@ router.get('/filter_newOrder', async (req,res)=>{
                         sb.orderNumber.forEach(o => {
                             products.forEach(result => {
                                 result.orderList.forEach(p => {
-                                    if (result._id == sb.proId && p.numberOrder == o) {
+                                    if (result._id == sb.proId && p.numberOrder == o && p.orderDate.toISOString().slice(0, 10) == req.params.date) {
                                         if (p.status == 0) {
                                             obj.status = 'Pending'
                                             check = true

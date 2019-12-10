@@ -55,6 +55,7 @@ router.get('/', isLoggedIn, async (req, res) => {
   Product.find(async (err, docs) => {
     // setup message notifications
     var message = await glosbe_Daily.message_notification()
+    await console.log(message)
     req.session.messsages = message
     // var arr_filterChart = []
     for (var i = 0; i < docs.length; i++) {
