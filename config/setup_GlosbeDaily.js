@@ -90,12 +90,12 @@ module.exports = {
         return await obj
         // end notification for new order
     },
-    'order_pending': async () => {
+    'order_pending': async function () {
         var arr = []
         var users = await User.find({
             'role': 'Customer'
         }, async (err, users) => {
-            await Product.find((err, products) => {
+            var pro_duct = await Product.find(async(err, products) => {
                 var number = 0
                 users.forEach(u => {
                     u.orderList.forEach(user_order => {
@@ -127,6 +127,7 @@ module.exports = {
                         }
                     })
                 })
+
             })
 
         })

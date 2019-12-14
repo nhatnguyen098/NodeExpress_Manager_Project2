@@ -344,14 +344,8 @@
 {{!-- function setup line chart --}}
 <script type='text/javascript'>
 
-  var arr_filterCharts = {{{ arr_filterCharts }}} // data of rating star, profit, order, number of each product
-  var rating = [], orders = [], quantity = [];
-  arr_filterCharts.forEach(s => {
-    rating.push(s.total_Rating)
-    orders.push(s.total_Order)
-    quantity.push(s.total_Quantity)
-  })
-  console.log(rating)
+
+
   var arrProfits = {{{ arrProfit }}} // data of each profit of product
 
   var arrTitles_barChart = []
@@ -415,6 +409,14 @@
     });
     change_chart.onclick = async () => {
       chart_option.destroy()
+      var arr_filterCharts = {{{ arr_filterCharts }}} // data of rating star, profit, order, number of each product
+      var rating = [], orders = [], quantity = [];
+      console.log(arr_filterCharts)
+      arr_filterCharts.forEach(s => {
+        rating.push(s.total_Rating)
+        orders.push(s.total_Order)
+        quantity.push(s.total_Quantity)
+      })
       //await Draw_optionChart(arrTitles_barChart, barChart_value, option_chart.value, 'Profit of products', 'proProfit')
       switch (option_value.value) {
         case '1':
