@@ -109,7 +109,6 @@ router.get('/productList/:page', isLoggedIn, async (req, res) => {
     limit: 10
   }, async (err, rs) => { // to do view product list
     var docs = rs.docs
-    console.log(docs)
     var sumProfit = 0;
     var sumQuantity = 0;
     var sumOrder = 0;

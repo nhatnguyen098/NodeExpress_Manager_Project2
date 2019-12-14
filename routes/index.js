@@ -24,8 +24,8 @@ router.get('/', isLoggedIn, async (req, res) => {
       totalOrder += s.orderList.length
     })
   })
-  var order_pend = await glosbe_Daily.order_pending()
-  await console.log(order_pend)
+  // var order_pend = await glosbe_Daily.order_pending()
+  // await console.log(order_pend)
   // filter top 5 product by profit
   var top_5_Profit = []
   await Product.find().sort({
@@ -55,7 +55,6 @@ router.get('/', isLoggedIn, async (req, res) => {
   Product.find(async (err, docs) => {
     // setup message notifications
     var message = await glosbe_Daily.message_notification()
-    await console.log(message)
     req.session.messsages = message
     // var arr_filterChart = []
     for (var i = 0; i < docs.length; i++) {
@@ -80,7 +79,7 @@ router.get('/', isLoggedIn, async (req, res) => {
       arr_filterChart.push(object_filter_chart)
     }
     // send data to option chart
-    res.locals.arr_filterCharts = await JSON.stringify(arr_filterChart)
+    //res.locals.arr_filterCharts = await JSON.stringify(arr_filterChart)
 
 
     // view compare profit of today with yesterday
@@ -95,7 +94,7 @@ router.get('/', isLoggedIn, async (req, res) => {
     res.locals.arrProfit = await JSON.stringify(barChart)
     var pieChart = await chart.pieChart(totalProfit)
     res.locals.arrPercent = await JSON.stringify(pieChart)
-
+    console.log(arr_filterChart)
 
     // var auto_updateStatus_Order = await auto_updateStatusOrder(2)
     await res.render('pages/index', {
@@ -105,7 +104,8 @@ router.get('/', isLoggedIn, async (req, res) => {
       dailySales: dailySales,
       // sessionUser: req.session.user._id
       sessionUser: req.session.user,
-      notification: message
+      notification: message,
+      arr_filterCharts: JSON.stringify(arr_filterChart)
     })
   })
 })

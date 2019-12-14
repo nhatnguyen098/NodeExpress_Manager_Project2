@@ -343,18 +343,21 @@
 </script>
 {{!-- function setup line chart --}}
 <script type='text/javascript'>
-  var arrProfits = {{{ arrProfit }}} // data of each profit of product
+
   var arr_filterCharts = {{{ arr_filterCharts }}} // data of rating star, profit, order, number of each product
-    var rating = [], orders = [], quantity = [];
-    arr_filterCharts.forEach(s => {
-      rating.push(s.total_Rating)
-      orders.push(s.total_Order)
-      quantity.push(s.total_Quantity)
-    })
+  var rating = [], orders = [], quantity = [];
+  arr_filterCharts.forEach(s => {
+    rating.push(s.total_Rating)
+    orders.push(s.total_Order)
+    quantity.push(s.total_Quantity)
+  })
+  console.log(rating)
+  var arrProfits = {{{ arrProfit }}} // data of each profit of product
 
   var arrTitles_barChart = []
   var barChart_value = []
   arrProfits.forEach(s => { arrTitles_barChart.push(s.title); barChart_value.push(s.values) })
+
 
   function Draw_optionChart(label, datas, optionChart, titleChart, tagMaster) {
     var ctx_chart = document.getElementById(tagMaster).getContext('2d');

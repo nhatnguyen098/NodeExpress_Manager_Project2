@@ -13,8 +13,8 @@ router.get('/orderList', isLoggedIn, async (req, res) => {
     }, async (err, users) => {
         var numberStt = 0
         // Filter user role -> orderList (orderDate,totalPrice) -> sub_order (proId) -> orderNumber.
-        await Product.find((err, products) => {
-            users.forEach(u => {
+        await Product.find(async (err, products) => {
+            await users.forEach(u => {
                 u.orderList.forEach(s => {
                     var obj = {}
                     obj.email = u.email
@@ -26,11 +26,15 @@ router.get('/orderList', isLoggedIn, async (req, res) => {
                     obj.id = u._id
                     obj.numberOrder = s.number
                     s.sub_order.forEach(sb => {
+                        //console.log(sb)
                         obj.totalItem = obj.totalItem + sb.orderNumber.length
                         sb.orderNumber.forEach(o => {
                             products.forEach(result => {
                                 result.orderList.forEach(p => {
                                     if (result._id == sb.proId && p.numberOrder == o) {
+                                        // console.log('product:',result)
+                                        // console.log('ordernumber:',o)
+                                        // console.log('status:',p.status)
                                         if (p.status == 1) {
                                             obj.status = 'Done'
                                         } else if (p.status == 0) {
@@ -48,9 +52,10 @@ router.get('/orderList', isLoggedIn, async (req, res) => {
                 })
             })
         })
-        arrFilters = arr
+        arrFilters = await arr
+        // console.log(arr)
         // res.locals.arrFilter = JSON.stringify(arr)
-        res.render('orders/orderList', {
+        await res.render('orders/orderList', {
             orders: 'order',
             orderList: arr,
             sessionUser: req.session.user,
@@ -60,7 +65,7 @@ router.get('/orderList', isLoggedIn, async (req, res) => {
 
 })
 
-router.get('/filter_newOrder/:date', async (req,res)=>{
+router.get('/filter_newOrder/:date', async (req, res) => {
     var arr = []
     await User.find({
         'role': 'Customer'
@@ -95,7 +100,7 @@ router.get('/filter_newOrder/:date', async (req,res)=>{
                             })
                         })
                     })
-                    if(check == true){
+                    if (check == true) {
                         obj.number = numberStt
                         arr.push(obj)
                     }
@@ -113,7 +118,7 @@ router.get('/filter_newOrder/:date', async (req,res)=>{
 router.post('/filter_status', async (req, res) => {
     if (req.body.status == 2) {
         res.redirect('./orderList')
-    }else {
+    } else {
         var arr = []
         arrFilters.forEach(s => {
             if (s.status == req.body.status) {
@@ -194,6 +199,7 @@ router.post('/updateStatus_Order', async (req, res) => {
     var arr_proDelet = JSON.parse(req.body.arrPro)
     // forEeach find proId -> get old status + profit -> findoneandUpdate -> update status
     await arr_proDelet.forEach(arr => {
+        var check = false
         Product.findOneAndUpdate({
             '_id': arr._id,
             'orderList.numberOrder': arr.numberOrder
@@ -205,24 +211,54 @@ router.post('/updateStatus_Order', async (req, res) => {
             new: true,
             upsert: true
         }, (err, docs) => {
+            if (docs) {
+                check = true
+            }
+            if (check == true) {
+                Product.findById(arr._id, (async (err, doc) => {
+                    var totalValues = 0
+                    doc.orderList.forEach(p => {
+                        if (p.status == 1) {
+                            totalValues += p.totalHasDiscount
+                        }
+                    })
+                    Product.findByIdAndUpdate(arr._id, {
+                        '$set': {
+                            'totalProfit': totalValues
+                        }
+                    }, {
+                        upsert: true,
+                        new: true
+                    }, (err, products) => {
+                        console.log('zxczxczzzzzzzzzzzzzzzzxczxczxcasdawdawdawd',products)
+                    })
+                }))
+            }
         })
+        
+
 
     })
-    await Product.find(async (err, docs) => {
-        await docs.forEach(pro => {
-            var totalValues = 0
-            pro.orderList.forEach(p => {
-                if (p.status == 1) {
-                    totalValues += p.totalHasDiscount
-                }
-            })
-            Product.findByIdAndUpdate(pro._id, {
-                '$set': {
-                    'totalProfit': totalValues
-                }
-            },(err,products)=>{})
-        })
-    })
+    // await Product.find(async (err, docs) => {
+    //     await docs.forEach(pro => {
+    //         var totalValues = 0
+    //         pro.orderList.forEach(p => {
+    //             if (p.status == 1) {
+    //                 totalValues += p.totalHasDiscount
+    //             }
+    //         })
+    //         Product.findByIdAndUpdate(pro._id, {
+    //             '$set': {
+    //                 'totalProfit': totalValues
+    //             }
+    //         }, {
+    //             upsert: true,
+    //             new: true
+    //         }, (err, products) => {
+    //             console.log(products)
+    //         })
+    //     })
+    // })
     await res.redirect('./orderList')
 })
 
