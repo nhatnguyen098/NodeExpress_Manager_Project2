@@ -21,20 +21,15 @@ router.get('/orderList', isLoggedIn, async (req, res) => {
                     numberStt++
                     obj.orderDate = s.orderDate
                     obj.totalPrice = s.totalPrice
-                    // obj.totalItem = s.sub_order.length
                     obj.totalItem = 0
                     obj.id = u._id
                     obj.numberOrder = s.number
                     s.sub_order.forEach(sb => {
-                        //console.log(sb)
                         obj.totalItem = obj.totalItem + sb.orderNumber.length
                         sb.orderNumber.forEach(o => {
                             products.forEach(result => {
                                 result.orderList.forEach(p => {
                                     if (result._id == sb.proId && p.numberOrder == o) {
-                                        // console.log('product:',result)
-                                        // console.log('ordernumber:',o)
-                                        // console.log('status:',p.status)
                                         if (p.status == 1) {
                                             obj.status = 'Done'
                                         } else if (p.status == 0) {
@@ -53,8 +48,6 @@ router.get('/orderList', isLoggedIn, async (req, res) => {
             })
         })
         arrFilters = await arr
-        // console.log(arr)
-        // res.locals.arrFilter = JSON.stringify(arr)
         await res.render('orders/orderList', {
             orders: 'order',
             orderList: arr,
@@ -230,7 +223,6 @@ router.post('/updateStatus_Order', async (req, res) => {
                         upsert: true,
                         new: true
                     }, (err, products) => {
-                        console.log('zxczxczzzzzzzzzzzzzzzzxczxczxcasdawdawdawd',products)
                     })
                 }))
             }
@@ -239,26 +231,6 @@ router.post('/updateStatus_Order', async (req, res) => {
 
 
     })
-    // await Product.find(async (err, docs) => {
-    //     await docs.forEach(pro => {
-    //         var totalValues = 0
-    //         pro.orderList.forEach(p => {
-    //             if (p.status == 1) {
-    //                 totalValues += p.totalHasDiscount
-    //             }
-    //         })
-    //         Product.findByIdAndUpdate(pro._id, {
-    //             '$set': {
-    //                 'totalProfit': totalValues
-    //             }
-    //         }, {
-    //             upsert: true,
-    //             new: true
-    //         }, (err, products) => {
-    //             console.log(products)
-    //         })
-    //     })
-    // })
     await res.redirect('./orderList')
 })
 

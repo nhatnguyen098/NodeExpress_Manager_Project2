@@ -18,8 +18,7 @@ module.exports = {
                         totalOrder++
                     }
                 })
-            })
-            // await console.log(totalOrder) 
+            }) 
         })
         return await totalOrder
     }

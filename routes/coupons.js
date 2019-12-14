@@ -31,7 +31,6 @@ router.post('/read_csv', upload.single('file'), (req, res) => {
     csv.fromPath(req.file.path).on("data", function (data) {
 
         fileRows.push(data); // push each row
-        // console.log(data)
     }).on("end", function () {
         fs.unlinkSync(req.file.path); // remove temp file
         //process "fileRows"

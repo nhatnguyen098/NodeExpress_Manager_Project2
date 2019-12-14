@@ -76,7 +76,6 @@ module.exports = {
                 })
             })
         })
-        await console.log(arr)
         return await arr
     },
     'filter_oneDate': async (date) => {
@@ -98,7 +97,6 @@ module.exports = {
                 })
             })
         })
-        await console.log(arr)
         return await arr
     },
     'sort_star': async () => {

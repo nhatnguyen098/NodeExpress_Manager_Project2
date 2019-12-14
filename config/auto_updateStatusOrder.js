@@ -6,8 +6,6 @@ module.exports = async (date_wantUpdate) => {
         await docs.forEach(s => {
             s.orderList.forEach(x => {
                 var orderDate = x.orderDate.toISOString().slice(8, 10)
-                console.log(orderDate)
-                console.log(Number(today.toISOString().slice(8, 10)))
                 if ((Number(today.toISOString().slice(8, 10)) - Number(orderDate) == date_wantUpdate) && x.status != 1) {
                     dateUpdate = x.orderDate;
                 }
@@ -25,6 +23,5 @@ module.exports = async (date_wantUpdate) => {
         },(err,rs)=>{
         })
     }
-    // await console.log(dateUpdate)
     return dateUpdate
 }

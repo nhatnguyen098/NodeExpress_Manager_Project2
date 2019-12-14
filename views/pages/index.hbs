@@ -411,7 +411,6 @@
       chart_option.destroy()
       var arr_filterCharts = {{{ arr_filterCharts }}} // data of rating star, profit, order, number of each product
       var rating = [], orders = [], quantity = [];
-      console.log(arr_filterCharts)
       arr_filterCharts.forEach(s => {
         rating.push(s.total_Rating)
         orders.push(s.total_Order)
