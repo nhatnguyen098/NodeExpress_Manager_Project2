@@ -99,9 +99,20 @@ module.exports = {
         })
         return await arr
     },
-    'sort_star': async () => {
-        return await Product.find().sort({
-            totalProfit: -1
-        }).limit(5);
+    'sort_star': async function (){
+        var arr = []
+        var pro = await Product.find().sort({
+            productRate: -1
+          }).limit(5).exec(async (err, rs) => {
+            var i = 1;
+            await rs.forEach(s => {
+              s.number = i
+              i++
+            })
+            arr = await rs
+            // return await arr  
+        })
+        return await arr
+          
     }
 }

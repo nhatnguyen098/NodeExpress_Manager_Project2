@@ -108,6 +108,21 @@ router.get('/filter_newOrder/:date', async (req, res) => {
         })
     })
 })
+router.post('/filter_orderPending', async (req, res) => {
+        var arr = []
+        arrFilters.forEach(s => {
+            if (s.status == 0) {
+                arr.push(s)
+            }
+        })
+        res.render('orders/orderList', {
+            orders: 'order',
+            orderList: arr,
+            sessionUser: req.session.user,
+            notification: req.session.messsages
+        })
+
+})
 router.post('/filter_status', async (req, res) => {
     if (req.body.status == 2) {
         res.redirect('./orderList')
@@ -125,7 +140,6 @@ router.post('/filter_status', async (req, res) => {
             notification: req.session.messsages
         })
     }
-
 })
 
 router.get('/orderDetail/:numberOrder', async (req, res) => {

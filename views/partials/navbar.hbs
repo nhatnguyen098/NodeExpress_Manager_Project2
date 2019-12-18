@@ -38,7 +38,7 @@
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
             {{!-- <a class="dropdown-item" href="https://mail.google.com/mail/u/0/#inbox">Your email</a> --}}
             {{#if notification.task_pending}}
-            <a class="dropdown-item" href="/order/filter_status/0">You have {{notification.task_pending}} pending
+            <a class="dropdown-item" href="/order/filter_orderPending">You have {{notification.task_pending}} pending
               order</a>
             {{/if}}
             {{#if notification.date_new}}

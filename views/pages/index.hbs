@@ -197,16 +197,16 @@
         <div class="card-body table-responsive">
           <table class="table table-hover">
             <thead class="text-primary">
-              <th>No.</th>
-              <th>Product's Name</th>
-              <th>Total Profit</th>
+              <th class="text-center">No.</th>
+              <th class="text-center">Product's Name</th>
+              <th class="text-center">Total Profit</th>
             </thead>
             <tbody>
               {{#each top5_Profit}}
               <tr>
-                <td>{{this.number}}</td>
-                <td>{{this.title}}</td>
-                <td>${{this.totalProfit}}</td>
+                <td class="text-center">{{this.number}}</td>
+                <td class="text-center">{{this.title}}</td>
+                <td class="text-primary text-center">${{this.totalProfit}}</td>
               </tr>
               {{/each}}
             </tbody>
@@ -228,16 +228,16 @@
         <div class="card-body table-responsive">
           <table class="table table-hover">
             <thead class="text-primary">
-              <th>No.</th>
-              <th>Product's Name</th>
-              <th>Rating Star</th>
+              <th class="text-center">No.</th>
+              <th class="text-center">Product's Name</th>
+              <th class="text-center">Rating Star</th>
             </thead>
             <tbody>
               {{#each top5_rating}}
               <tr>
-                <td>{{this.number}}</td>
-                <td>{{this.title}}</td>
-                <td>{{this.productRate}}</td>
+                <td class="text-center">{{this.number}}</td>
+                <td class="text-center">{{this.title}}</td>
+                <td class="text-primary text-center">{{this.productRate}} <i class="fa fa-star" aria-hidden="true"></i></td>
               </tr>
               {{/each}}
             </tbody>

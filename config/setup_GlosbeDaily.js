@@ -59,10 +59,11 @@ module.exports = {
         }, async (err, users) => {
             var today = new Date()
             await Product.find(async (err, pro) => {
+                var count = 0
                 await users.forEach(u => {
-                    var count = 0
                     var check = false
                     u.orderList.forEach(o => {
+                        var check_number = false
                         if (o.orderDate.toISOString().slice(0, 10) == today.toISOString().slice(0, 10)) {
                             o.sub_order.forEach(so => {
                                 so.orderNumber.forEach(no => {
@@ -70,20 +71,26 @@ module.exports = {
                                         products.orderList.forEach(p => {
                                             if (p.status == 0 && products._id == so.proId && p.numberOrder == no) {
                                                 check = true
+                                                check_number = true
                                             }
                                         })
                                     })
                                 })
                             })
                         }
+                        if (check_number == true) {
+                            count++
+                        }
                     })
                     if (check == true) {
-                        count++
+                        //count++
                         obj.new_order = count
-                        obj.message = obj.message + 1
                         obj.date_new = today.toISOString().slice(0, 10)
                     }
                 })
+                if (obj.new_order && obj.new_order != 0) {
+                    obj.message = obj.message + 1
+                }
             })
 
         })
@@ -92,11 +99,11 @@ module.exports = {
     },
     'order_pending': async function () {
         var arr = []
+        var number = 0
         var users = await User.find({
             'role': 'Customer'
         }, async (err, users) => {
-            var pro_duct = await Product.find(async(err, products) => {
-                var number = 0
+            var pro_duct = await Product.find(async (err, products) => {
                 users.forEach(u => {
                     u.orderList.forEach(user_order => {
                         var check = false
@@ -131,6 +138,6 @@ module.exports = {
             })
 
         })
-        return await arr
+        return await number
     }
 }

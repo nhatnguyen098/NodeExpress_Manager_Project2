@@ -48,14 +48,12 @@ router.get('/', isLoggedIn, async (req, res) => {
       s.number = i
       i++
     })
-    //top5_rating = await rs
     res.locals.top5_rating = await rs
   })
 
   // data for index page
   Product.find(async (err, docs) => {
     // setup message notifications
-    var mesas = []
     var message = await glosbe_Daily.message_notification()
     req.session.messsages = message
     var arr_filterChart = []
@@ -128,9 +126,10 @@ router.post('/filter_date', async (req, res) => {
     var message = await glosbe_Daily.message_notification() // view message for header
     var dailySales = await glosbe_Daily.glosbeDaily() // view compare profit of today with yesterday
     res.locals.arr_filterCharts = await JSON.stringify(arr_filterChart_all) // send data to option chart
-    res.locals.top5_rating = await JSON.stringify(top5_rating) // send data to top 5 rating
+    // filter top 5 rating start and profit
+    res.locals.top5_rating = await JSON.stringify(filter_Func.sort_star()) // send data to top 5 rating
     res.locals.top5_Profit = await JSON.stringify(top5_Profit) // send data to top 5 profit
-    res.render('pages/index', {
+    await res.render('pages/index', {
       dashboard: 'dashboard',
       totalProfit: totalItemProfit.toFixed(1), // view total value of product
       totalOrder: totalAllOrder, // view total order number
